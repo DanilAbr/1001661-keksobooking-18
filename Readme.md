@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Danila Abramov](https://up.htmlacademy.ru/javascript/18/user/1001661).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Вечканов](https://htmlacademy.ru/profile/id902303).
 
 ---
 
