@@ -28,7 +28,7 @@ var createPrice = function () {
   return price;
 };
 
-//Создаем тип жилья
+// Создаем тип жилья
 var createType = function () {
   var type = TYPE_ARR[Math.floor(Math.random() * TYPE_ARR.length)];
   return type;
