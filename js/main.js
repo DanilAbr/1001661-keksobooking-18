@@ -14,6 +14,7 @@ var address = '600, 350';
 var description = 'Описание';
 var SUM_PINS = 8;
 
+// Создает аватарку
 var createAvatar = function () {
   for (var k = 1; k < SUM_PINS; k++) {
     var newAvatar = 'img/avatars/user0' + (i + 1) + '.png';
@@ -21,36 +22,43 @@ var createAvatar = function () {
   return newAvatar;
 };
 
+// Создает цену
 var createPrice = function () {
   var price = Math.floor(Math.random() * 30000);
   return price;
 };
 
+// Создает тип жилья
 var createType = function () {
   var type = TYPE_ARR[Math.floor(Math.random() * TYPE_ARR.length)];
   return type;
 };
 
+// Создает количество комнат
 var createRooms = function () {
   var rooms = Math.floor(Math.random() * 5);
   return rooms;
 };
 
+// Создает количество гостей
 var createGuests = function () {
   var guests = Math.floor(Math.random() * 7);
   return guests;
 };
 
+// Создает время заезда
 var createCheckin = function () {
   var checkin = CHECKIN_ARR[Math.floor(Math.random() * CHECKIN_ARR.length)];
   return checkin;
 };
 
+// Создает время отъезда
 var createCheckout = function () {
   var checkout = CHECKOUT_ARR[Math.floor(Math.random() * CHECKOUT_ARR.length)];
   return checkout;
 };
 
+// Создает преимущества
 var createFeatures = function () {
   var features = [];
   for (var i = 0; i < Math.floor(Math.random() * FEATURES_ARR.length); i++) {
@@ -59,6 +67,7 @@ var createFeatures = function () {
   return features;
 };
 
+// Создает фото
 var createPhotos = function () {
   var photos = [];
   for (var i = 0; i < Math.floor(Math.random() * PHOTOS_ARR.length); i++) {
@@ -67,16 +76,19 @@ var createPhotos = function () {
   return photos;
 };
 
+// Создает координату Х
 var createX = function () {
   var x = Math.round(Math.random() * (document.querySelector('.map').offsetWidth));
   return x;
 };
 
+// Создает координату Y
 var createY = function () {
   var y = Math.round(Math.random() * (630 - 130) + 130);
   return y;
 };
 
+// Создает объект - описание объявления
 var offerDescription = function () {
   var createOfferDescription = {
     author: {
@@ -115,6 +127,7 @@ var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pi
 
 var pinsContainer = document.querySelector('.map__pins');
 
+// Создает пины
 var renderPin = function (pinData) {
   var pin = pinTemplate.cloneNode(true);
 
