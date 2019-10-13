@@ -131,4 +131,3 @@ for (var j = 0; j < SUM_PINS; j++) {
   fragment.appendChild(renderPin(pinDataArray[j]));
 }
 pinsContainer.appendChild(fragment);
-
