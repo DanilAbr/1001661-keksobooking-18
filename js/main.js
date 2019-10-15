@@ -120,27 +120,77 @@ for (var i = 0; i < SUM_PINS; i++) {
   pinDataArray.push(offerDescription());
 }
 
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+// var map = document.querySelector('.map');
+// map.classList.remove('map--faded');
 
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+// var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
-var pinsContainer = document.querySelector('.map__pins');
+// var pinsContainer = document.querySelector('.map__pins');
 
 // Создает пины
-var renderPin = function (pinData) {
-  var pin = pinTemplate.cloneNode(true);
+// var renderPin = function (pinData) {
+//   var pin = pinTemplate.cloneNode(true);
 
-  pin.style = 'left: ' + (pinData.location.x - pin.offsetWidth / 2) + 'px; top: ' + (pinData.location.y - pin.offsetHeight) + 'px;';
-  pin.querySelector('img').src = pinData.author.avatar;
-  pin.querySelector('img').alt = pinData.offer.title;
+//   pin.style = 'left: ' + (pinData.location.x - pin.offsetWidth / 2) + 'px; top: ' + (pinData.location.y - pin.offsetHeight) + 'px;';
+//   pin.querySelector('img').src = pinData.author.avatar;
+//   pin.querySelector('img').alt = pinData.offer.title;
 
-  return pin;
+//   return pin;
+// };
+
+// var fragment = document.createDocumentFragment();
+
+// for (var j = 0; j < SUM_PINS; j++) {
+//   fragment.appendChild(renderPin(pinDataArray[j]));
+// }
+// pinsContainer.appendChild(fragment);
+
+var fieldset = document.querySelectorAll('.ad-form__element');
+var mapFilters = document.querySelector('.map__filters');
+var mapPinMain = document.querySelector('.map__pin--main');
+var map = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
+var ENTER_KEYCODE = 13;
+var mainAddress = document.querySelector('#address');
+var mapPinMainTop = parseInt(mapPinMain.style.top, 10);
+var mapPinMainLeft = parseInt(mapPinMain.style.left, 10);
+var mapPinMainCenter = mapPinMain.offsetWidth / 2;
+
+// Добавляет аттрибут disabled всем <input> и <select> формы .ad-form
+var fieldsetDisabled = function () {
+  for (var k = 0; k < fieldset.length; k++) {
+    fieldset[k].setAttribute('disabled', true);
+  }
 };
 
-var fragment = document.createDocumentFragment();
+// Удаляет аттрибут disabled всем <input> и <select> формы .ad-form
+var fieldsetActive = function () {
+  for (var j = 0; j < fieldset.length; j++) {
+    fieldset[j].removeAttribute('disabled', true);
+  }
+};
 
-for (var j = 0; j < SUM_PINS; j++) {
-  fragment.appendChild(renderPin(pinDataArray[j]));
-}
-pinsContainer.appendChild(fragment);
+fieldsetDisabled();
+mapFilters.classList.add('ad-form--disabled');
+mainAddress.value = (mapPinMainLeft + mapPinMainCenter) + ', ' + (mapPinMainTop + mapPinMainCenter);
+
+// Переводит в активный режим
+var activeMode = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  fieldsetActive();
+  mapFilters.classList.remove('ad-form--disabled');
+  mainAddress.value = (mapPinMainLeft + mapPinMainCenter) + ', ' + (mapPinMainTop + mapPinMainCenter * 2);
+};
+
+mapPinMain.addEventListener('mousedown', function () {
+  activeMode();
+});
+
+mapPinMain.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activeMode();
+  }
+});
+
+
