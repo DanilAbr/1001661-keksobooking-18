@@ -192,5 +192,3 @@ mapPinMain.addEventListener('keydown', function (evt) {
     activeMode();
   }
 });
-
-
