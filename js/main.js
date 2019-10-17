@@ -142,5 +142,13 @@ for (var j = 0; j < SUM_PINS; j++) {
 }
 pinsContainer.appendChild(fragment);
 
-// var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-// var map = document.querySelector('.map');
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var map = document.querySelector('.map');
+
+var cardElement = cardTemplate.cloneNode(true);
+console.log(pinDataArray);
+cardElement.querySelector('.popup__title').textContent = pinDataArray[0].offer.title;
+map.appendChild(cardElement);
+
+
+
