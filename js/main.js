@@ -24,7 +24,7 @@ var createAvatar = function () {
 
 // Создаем цену
 var createPrice = function () {
-  var price = Math.floor(Math.random() * 30000);
+  var price = Math.floor(Math.random() * 30000) + 700;
   return price;
 };
 
@@ -36,7 +36,7 @@ var createType = function () {
 
 // Создаем количество комнат
 var createRooms = function () {
-  var rooms = Math.floor(Math.random() * 5);
+  var rooms = Math.ceil(Math.random() * 4);
   return rooms;
 };
 
@@ -70,7 +70,7 @@ var createFeatures = function () {
 // Создаем фото
 var createPhotos = function () {
   var photos = [];
-  for (var i = 0; i < Math.floor(Math.random() * PHOTOS_ARR.length); i++) {
+  for (var i = 0; i < Math.ceil(Math.random() * PHOTOS_ARR.length); i++) {
     photos.push(PHOTOS_ARR[i]);
   }
   return photos;
@@ -142,5 +142,41 @@ for (var j = 0; j < SUM_PINS; j++) {
 }
 pinsContainer.appendChild(fragment);
 
-// var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-// var map = document.querySelector('.map');
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var map = document.querySelector('.map');
+
+// Проверяем тип жилья
+var checkType = function () {
+  if (pinDataArray[0].offer.type === 'flat') {
+    var typeElement = 'Квартира';
+  }
+  if (pinDataArray[0].offer.type === 'bungalo') {
+    typeElement = 'Бунгало';
+  }
+  if (pinDataArray[0].offer.type === 'house') {
+    typeElement = 'Дом';
+  }
+  if (pinDataArray[0].offer.type === 'palace') {
+    typeElement = 'Дворец';
+  }
+  return typeElement;
+};
+
+// Создаем модальный элемент с описанием объявления
+var createModalElement = function () {
+  var cardElement = cardTemplate.cloneNode(true);
+
+  cardElement.querySelector('.popup__title').textContent = pinDataArray[0].offer.title;
+  cardElement.querySelector('.popup__text--address').textContent = pinDataArray[0].offer.address;
+  cardElement.querySelector('.popup__text--price').textContent = pinDataArray[0].offer.price + '₽/ночь';
+  cardElement.querySelector('.popup__type').textContent = checkType();
+  cardElement.querySelector('.popup__text--capacity').textContent = pinDataArray[0].offer.rooms + ' комнаты для ' + pinDataArray[0].offer.guests + ' гостей';
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + pinDataArray[0].offer.checkin + ', выезд до ' + pinDataArray[0].offer.checkout;
+  cardElement.querySelector('.popup__features').textContent = pinDataArray[0].offer.features;
+  cardElement.querySelector('.popup__description').textContent = pinDataArray[0].offer.description;
+  // В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.   - тут нужна подсказка. Не понимаю, что делать.
+  cardElement.querySelector('.popup__avatar').src = pinDataArray[0].author.avatar;
+
+  return cardElement;
+};
+map.appendChild(createModalElement());
