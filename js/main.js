@@ -120,12 +120,10 @@ for (var i = 0; i < SUM_PINS; i++) {
   pinDataArray.push(offerDescription());
 }
 
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+document.querySelector('.map').classList.remove('map--faded');
 
 var pinsContainer = document.querySelector('.map__pins');
+var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
 // Создаем пины и заполняем их данными из массива
 var renderPin = function (pinData) {
@@ -139,8 +137,10 @@ var renderPin = function (pinData) {
 };
 
 var fragment = document.createDocumentFragment();
-
 for (var j = 0; j < SUM_PINS; j++) {
   fragment.appendChild(renderPin(pinDataArray[j]));
 }
 pinsContainer.appendChild(fragment);
+
+// var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+// var map = document.querySelector('.map');
