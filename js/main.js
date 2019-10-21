@@ -147,17 +147,18 @@ var map = document.querySelector('.map');
 
 // Проверяем тип жилья
 var checkType = function () {
-  if (pinDataArray[0].offer.type === 'flat') {
-    var typeElement = 'Квартира';
-  }
-  if (pinDataArray[0].offer.type === 'bungalo') {
-    typeElement = 'Бунгало';
-  }
-  if (pinDataArray[0].offer.type === 'house') {
-    typeElement = 'Дом';
-  }
-  if (pinDataArray[0].offer.type === 'palace') {
-    typeElement = 'Дворец';
+  switch (pinDataArray[0].offer.type) {
+    case 'flat':
+      var typeElement = 'Квартира';
+      break;
+    case 'bungalo':
+      typeElement = 'Бунгало';
+      break;
+    case 'house':
+      typeElement = 'Дом';
+      break;
+    case 'palace':
+      typeElement = 'Дворец';
   }
   return typeElement;
 };
@@ -174,7 +175,7 @@ var createModalElement = function () {
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + pinDataArray[0].offer.checkin + ', выезд до ' + pinDataArray[0].offer.checkout;
   cardElement.querySelector('.popup__features').textContent = pinDataArray[0].offer.features;
   cardElement.querySelector('.popup__description').textContent = pinDataArray[0].offer.description;
-  // В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.   - тут нужна подсказка. Не понимаю, что делать.
+  cardElement.querySelector('.popup__photo').src = pinDataArray[0].offer.photos[0];
   cardElement.querySelector('.popup__avatar').src = pinDataArray[0].author.avatar;
 
   return cardElement;
