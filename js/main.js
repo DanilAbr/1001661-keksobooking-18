@@ -167,16 +167,37 @@ var checkType = function () {
 var createModalElement = function () {
   var cardElement = cardTemplate.cloneNode(true);
 
-  cardElement.querySelector('.popup__title').textContent = pinDataArray[0].offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = pinDataArray[0].offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = pinDataArray[0].offer.price + '₽/ночь';
-  cardElement.querySelector('.popup__type').textContent = checkType();
-  cardElement.querySelector('.popup__text--capacity').textContent = pinDataArray[0].offer.rooms + ' комнаты для ' + pinDataArray[0].offer.guests + ' гостей';
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + pinDataArray[0].offer.checkin + ', выезд до ' + pinDataArray[0].offer.checkout;
-  cardElement.querySelector('.popup__features').textContent = pinDataArray[0].offer.features;
-  cardElement.querySelector('.popup__description').textContent = pinDataArray[0].offer.description;
-  cardElement.querySelector('.popup__photo').src = pinDataArray[0].offer.photos[0];
+  var currentOffer = pinDataArray[0].offer;
+
+  var typeText = checkType();
+  var capacityText = currentOffer.rooms + ' комнаты для ' + currentOffer.guests + ' гостей';
+  var timeText = 'Заезд после ' + currentOffer.checkin + ', выезд до ' + currentOffer.checkout;
+
+  cardElement.querySelector('.popup__title').textContent = currentOffer.title;
+  cardElement.querySelector('.popup__text--address').textContent = currentOffer.address;
+  cardElement.querySelector('.popup__text--price').textContent = currentOffer.price + '₽/ночь';
+  cardElement.querySelector('.popup__type').textContent = typeText;
+  cardElement.querySelector('.popup__text--capacity').textContent = capacityText;
+  cardElement.querySelector('.popup__text--time').textContent = timeText;
+  cardElement.querySelector('.popup__features').textContent = currentOffer.features;
+  cardElement.querySelector('.popup__description').textContent = currentOffer.description;
   cardElement.querySelector('.popup__avatar').src = pinDataArray[0].author.avatar;
+
+  var imagesWrapperElement = cardElement.querySelector('.popup__photos');
+  var imageElement = cardElement.querySelector('.popup__photo');
+  var imageCopy = imageElement.cloneNode();
+  imagesWrapperElement.innerHTML = '';
+  var photosArray = currentOffer.photos;
+
+  var photosFragment = document.createDocumentFragment();
+
+  photosArray.forEach(function (imageSrc) {
+    var secondImageCopy = imageCopy.cloneNode();
+    secondImageCopy.src = imageSrc;
+    photosFragment.appendChild(secondImageCopy);
+  });
+
+  imagesWrapperElement.appendChild(photosFragment);
 
   return cardElement;
 };
