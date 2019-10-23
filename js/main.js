@@ -24,7 +24,7 @@ var mapPinMain = document.querySelector('.map__pin--main');
 var mainAddress = document.querySelector('#address');
 var mapPinMainTop = parseInt(mapPinMain.style.top, 10);
 var mapPinMainLeft = parseInt(mapPinMain.style.left, 10);
-var mapPinMainCenter = mapPinMain.offsetWidth / 2;
+var mapPinMainCenter = Math.round(mapPinMain.offsetWidth / 2);
 var mainPinAddress = (mapPinMainLeft + mapPinMainCenter) + ', ' + (mapPinMainTop + mapPinMainCenter * 2);
 
 // Создаем аватарку
@@ -136,10 +136,12 @@ for (var i = 0; i < SUM_PINS; i++) {
   var pinsContainer = document.querySelector('.map__pins');
 
   // Создаем пины и заполняем их данными из массива
-  var renderPin = function (pinData) {
+  var getPin = function (pinData) {
     var pin = pinTemplate.cloneNode(true);
+    var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
+    var pinStyleRight = pinData.location.y - pin.offsetHeight;
 
-    pin.style = 'left: ' + (pinData.location.x - pin.offsetWidth / 2) + 'px; top: ' + (pinData.location.y - pin.offsetHeight) + 'px;';
+    pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
     pin.querySelector('img').src = pinData.author.avatar;
     pin.querySelector('img').alt = pinData.offer.title;
 
@@ -149,7 +151,7 @@ for (var i = 0; i < SUM_PINS; i++) {
 
 var fragmentPins = document.createDocumentFragment();
 for (var j = 0; j < SUM_PINS; j++) {
-  fragmentPins.appendChild(renderPin(pinDataArray[j]));
+  fragmentPins.appendChild(getPin(pinDataArray[j]));
 }
 
 // Проверяем тип жилья
@@ -223,10 +225,10 @@ var fieldsetActive = function () {
 
 fieldsetDisabled();
 mapFilters.classList.add('ad-form--disabled');
-// mainAddress.value = mainPinAddress;
+mainAddress.value = mainPinAddress;
 
 // Переводим в активный режим
-var activeMode = function () {
+var toActiveMode = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   fieldsetActive();
@@ -237,48 +239,54 @@ var activeMode = function () {
 };
 
 mapPinMain.addEventListener('mousedown', function () {
-  activeMode();
+  toActiveMode();
 });
 
 mapPinMain.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    activeMode();
+    toActiveMode();
   }
 });
 
 var selectRooms = document.querySelector('#room_number');
 var selectGuests = document.querySelector('#capacity');
 
-selectGuests.options[0].setAttribute('disabled', true);
-selectGuests.options[1].setAttribute('disabled', true);
-selectGuests.options[3].setAttribute('disabled', true);
+selectGuests.options[2].setAttribute('selected', true);
 
 // Убираем варианты выбора количества гостей в зависимости от выбранного количества комнат
 selectRooms.onchange = function () {
+  selectGuests.options[0].removeAttribute('selected', true);
+  selectGuests.options[1].removeAttribute('selected', true);
+  selectGuests.options[2].removeAttribute('selected', true);
+  selectGuests.options[3].removeAttribute('selected', true);
   switch (this.value) {
     case '1':
       selectGuests.options[0].setAttribute('disabled', true);
       selectGuests.options[1].setAttribute('disabled', true);
       selectGuests.options[2].removeAttribute('disabled', true);
       selectGuests.options[3].setAttribute('disabled', true);
+      selectGuests.options[2].setAttribute('selected', true);
       break;
     case '2':
       selectGuests.options[0].setAttribute('disabled', true);
       selectGuests.options[1].removeAttribute('disabled', true);
       selectGuests.options[2].removeAttribute('disabled', true);
       selectGuests.options[3].setAttribute('disabled', true);
+      selectGuests.options[2].setAttribute('selected', true);
       break;
     case '3':
       selectGuests.options[0].removeAttribute('disabled', true);
       selectGuests.options[1].removeAttribute('disabled', true);
       selectGuests.options[2].removeAttribute('disabled', true);
       selectGuests.options[3].setAttribute('disabled', true);
+      selectGuests.options[2].setAttribute('selected', true);
       break;
     case '100':
       selectGuests.options[0].setAttribute('disabled', true);
       selectGuests.options[1].setAttribute('disabled', true);
       selectGuests.options[2].setAttribute('disabled', true);
       selectGuests.options[3].removeAttribute('disabled', true);
+      selectGuests.options[3].setAttribute('selected', true);
       break;
   }
 };
