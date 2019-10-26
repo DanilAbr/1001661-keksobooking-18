@@ -1,18 +1,31 @@
 'use strict';
 
+var CHECKOUT_ARR = ['12:00', '13:00', '14:00'];
+var CHECKIN_ARR = ['12:00', '13:00', '14:00'];
+var FEATURES_ARR = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS_ARR = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
-var FEATURES_ARR = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var CHECKOUT_ARR = ['12:00', '13:00', '14:00'];
-var CHECKIN_ARR = ['12:00', '13:00', '14:00'];
+var SUM_PINS = 8;
 var TYPE_ARR = ['palace', 'flat', 'house', 'bungalo'];
-var title = 'заголовок предложения';
+var ENTER_KEYCODE = 13;
 var address = '600, 350';
 var description = 'Описание';
-var SUM_PINS = 8;
+var title = 'заголовок предложения';
+
+var adForm = document.querySelector('.ad-form');
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var fieldset = document.querySelectorAll('.ad-form__element');
+var map = document.querySelector('.map');
+var mapFilters = document.querySelector('.map__filters');
+var mapPinMain = document.querySelector('.map__pin--main');
+var mainAddress = document.querySelector('#address');
+var mapPinMainTop = parseInt(mapPinMain.style.top, 10);
+var mapPinMainLeft = parseInt(mapPinMain.style.left, 10);
+var mapPinMainCenter = Math.round(mapPinMain.offsetWidth / 2);
+var mainPinAddress = (mapPinMainLeft + mapPinMainCenter) + ', ' + (mapPinMainTop + mapPinMainCenter * 2);
 
 // Создаем аватарку
 var createAvatar = function () {
@@ -118,32 +131,28 @@ var offerDescription = function () {
 var pinDataArray = [];
 for (var i = 0; i < SUM_PINS; i++) {
   pinDataArray.push(offerDescription());
+
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var pinsContainer = document.querySelector('.map__pins');
+
+  // Создаем пины и заполняем их данными из массива
+  var getPin = function (pinData) {
+    var pin = pinTemplate.cloneNode(true);
+    var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
+    var pinStyleRight = pinData.location.y - pin.offsetHeight;
+
+    pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
+    pin.querySelector('img').src = pinData.author.avatar;
+    pin.querySelector('img').alt = pinData.offer.title;
+
+    return pin;
+  };
 }
 
-document.querySelector('.map').classList.remove('map--faded');
-
-var pinsContainer = document.querySelector('.map__pins');
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-
-// Создаем пины и заполняем их данными из массива
-var renderPin = function (pinData) {
-  var pin = pinTemplate.cloneNode(true);
-
-  pin.style = 'left: ' + (pinData.location.x - pin.offsetWidth / 2) + 'px; top: ' + (pinData.location.y - pin.offsetHeight) + 'px;';
-  pin.querySelector('img').src = pinData.author.avatar;
-  pin.querySelector('img').alt = pinData.offer.title;
-
-  return pin;
-};
-
-var fragment = document.createDocumentFragment();
+var fragmentPins = document.createDocumentFragment();
 for (var j = 0; j < SUM_PINS; j++) {
-  fragment.appendChild(renderPin(pinDataArray[j]));
+  fragmentPins.appendChild(getPin(pinDataArray[j]));
 }
-pinsContainer.appendChild(fragment);
-
-var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-var map = document.querySelector('.map');
 
 // Проверяем тип жилья
 var checkType = function () {
@@ -168,7 +177,6 @@ var createModalElement = function () {
   var cardElement = cardTemplate.cloneNode(true);
 
   var currentOffer = pinDataArray[0].offer;
-
   var typeText = checkType();
   var capacityText = currentOffer.rooms + ' комнаты для ' + currentOffer.guests + ' гостей';
   var timeText = 'Заезд после ' + currentOffer.checkin + ', выезд до ' + currentOffer.checkout;
@@ -188,7 +196,6 @@ var createModalElement = function () {
   var imageCopy = imageElement.cloneNode();
   imagesWrapperElement.innerHTML = '';
   var photosArray = currentOffer.photos;
-
   var photosFragment = document.createDocumentFragment();
 
   photosArray.forEach(function (imageSrc) {
@@ -201,4 +208,85 @@ var createModalElement = function () {
 
   return cardElement;
 };
-map.appendChild(createModalElement());
+
+// Добавляем аттрибут disabled всем <input> и <select> формы .ad-form
+var fieldsetDisabled = function () {
+  for (var k = 0; k < fieldset.length; k++) {
+    fieldset[k].setAttribute('disabled', true);
+  }
+};
+
+// Удаляем аттрибут disabled всем <input> и <select> формы .ad-form
+var fieldsetActive = function () {
+  for (var k = 0; k < fieldset.length; k++) {
+    fieldset[k].removeAttribute('disabled', true);
+  }
+};
+
+fieldsetDisabled();
+mapFilters.classList.add('ad-form--disabled');
+mainAddress.value = mainPinAddress;
+
+// Переводим в активный режим
+var toActiveMode = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  fieldsetActive();
+  mapFilters.classList.remove('ad-form--disabled');
+  mainAddress.value = mainPinAddress;
+  pinsContainer.appendChild(fragmentPins);
+  map.appendChild(createModalElement());
+};
+
+mapPinMain.addEventListener('mousedown', function () {
+  toActiveMode();
+});
+
+mapPinMain.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    toActiveMode();
+  }
+});
+
+var selectRooms = document.querySelector('#room_number');
+var selectGuests = document.querySelector('#capacity');
+
+selectGuests.options[2].setAttribute('selected', true);
+
+// Убираем варианты выбора количества гостей в зависимости от выбранного количества комнат
+selectRooms.onchange = function () {
+  selectGuests.options[0].removeAttribute('selected', true);
+  selectGuests.options[1].removeAttribute('selected', true);
+  selectGuests.options[2].removeAttribute('selected', true);
+  selectGuests.options[3].removeAttribute('selected', true);
+  switch (this.value) {
+    case '1':
+      selectGuests.options[0].setAttribute('disabled', true);
+      selectGuests.options[1].setAttribute('disabled', true);
+      selectGuests.options[2].removeAttribute('disabled', true);
+      selectGuests.options[3].setAttribute('disabled', true);
+      selectGuests.options[2].setAttribute('selected', true);
+      break;
+    case '2':
+      selectGuests.options[0].setAttribute('disabled', true);
+      selectGuests.options[1].removeAttribute('disabled', true);
+      selectGuests.options[2].removeAttribute('disabled', true);
+      selectGuests.options[3].setAttribute('disabled', true);
+      selectGuests.options[2].setAttribute('selected', true);
+      break;
+    case '3':
+      selectGuests.options[0].removeAttribute('disabled', true);
+      selectGuests.options[1].removeAttribute('disabled', true);
+      selectGuests.options[2].removeAttribute('disabled', true);
+      selectGuests.options[3].setAttribute('disabled', true);
+      selectGuests.options[2].setAttribute('selected', true);
+      break;
+    case '100':
+      selectGuests.options[0].setAttribute('disabled', true);
+      selectGuests.options[1].setAttribute('disabled', true);
+      selectGuests.options[2].setAttribute('disabled', true);
+      selectGuests.options[3].removeAttribute('disabled', true);
+      selectGuests.options[3].setAttribute('selected', true);
+      break;
+  }
+};
