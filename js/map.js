@@ -8,18 +8,28 @@
   var mapPinMainLeft = parseInt(mapPinMain.style.left, 10);
   var mapPinMainCenter = Math.round(mapPinMain.offsetWidth / 2);
   var mainPinAddress = (mapPinMainLeft + mapPinMainCenter) + ', ' + (mapPinMainTop + mapPinMainCenter * 2);
-  var pinsContainer = document.querySelector('.map__pins');
   var ENTER_KEYCODE = 13;
 
   // Переводим в активный режим
   var toActiveMode = function () {
+    function success(data) {
+      data.forEach(function (item, i) {
+        item.id = i;
+      });
+      window.ordersData = data;
+      window.renderPins(data);
+    }
+
+    function error() {
+
+    }
+
     map.classList.remove('map--faded');
     window.form.adForm.classList.remove('ad-form--disabled');
     window.form.fieldsetActive();
     window.form.mapFilters.classList.remove('ad-form--disabled');
     mainAddress.value = mainPinAddress;
-    pinsContainer.appendChild(window.pin.fragmentPins);
-    map.appendChild(window.card.createModalElement());
+    window.load(success, error);
   };
 
   mapPinMain.addEventListener('mousedown', function () {
@@ -34,3 +44,4 @@
 
   mainAddress.value = mainPinAddress;
 })();
+
