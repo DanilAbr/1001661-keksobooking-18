@@ -22,8 +22,7 @@
       var pinNumber = e.currentTarget.dataset.id;
 
       var currentOrderData = window.ordersData.find(function (item) {
-        item.id.toString();
-        return item.id === pinNumber;
+        return item.id.toString() === pinNumber;
       });
 
       window.card.createModalElement(currentOrderData);
