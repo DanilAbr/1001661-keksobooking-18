@@ -4,8 +4,8 @@
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
   // Проверяем тип жилья
-  var checkType = function () {
-    switch (window.pin.pinDataArray[0].offer.type) {
+  var checkType = function (currentOffer) {
+    switch (currentOffer.offer.type) {
       case 'flat':
         var typeElement = 'Квартира';
         break;
@@ -21,31 +21,39 @@
     return typeElement;
   };
 
+  // Удаляем карточку с объявлением
+  function deleteCards() {
+    var map = document.querySelector('.map');
+    var cards = map.querySelectorAll('.map__card');
+
+    cards.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+
   // Создаем модальный элемент с описанием объявления
-  var createModalElement = function () {
+  var createModalElement = function (currentOffer) {
+    var map = document.querySelector('.map');
     var cardElement = cardTemplate.cloneNode(true);
-
-    var currentOffer = window.pin.pinDataArray[0].offer;
-    var typeText = checkType();
-    var capacityText = currentOffer.rooms + ' комнаты для ' + currentOffer.guests + ' гостей';
-    var timeText = 'Заезд после ' + currentOffer.checkin + ', выезд до ' + currentOffer.checkout;
-
-    cardElement.querySelector('.popup__title').textContent = currentOffer.title;
-    cardElement.querySelector('.popup__text--address').textContent = currentOffer.address;
-    cardElement.querySelector('.popup__text--price').textContent = currentOffer.price + '₽/ночь';
-    cardElement.querySelector('.popup__type').textContent = typeText;
-    cardElement.querySelector('.popup__text--capacity').textContent = capacityText;
-    cardElement.querySelector('.popup__text--time').textContent = timeText;
-    cardElement.querySelector('.popup__features').textContent = currentOffer.features;
-    cardElement.querySelector('.popup__description').textContent = currentOffer.description;
-    cardElement.querySelector('.popup__avatar').src = window.pin.pinDataArray[0].author.avatar;
-
+    var typeText = checkType(currentOffer);
+    var capacityText = currentOffer.offer.rooms + ' комнаты для ' + currentOffer.offer.guests + ' гостей';
+    var timeText = 'Заезд после ' + currentOffer.offer.checkin + ', выезд до ' + currentOffer.offer.checkout;
     var imagesWrapperElement = cardElement.querySelector('.popup__photos');
     var imageElement = cardElement.querySelector('.popup__photo');
     var imageCopy = imageElement.cloneNode();
     imagesWrapperElement.innerHTML = '';
-    var photosArray = currentOffer.photos;
+    var photosArray = currentOffer.offer.photos;
     var photosFragment = document.createDocumentFragment();
+
+    cardElement.querySelector('.popup__title').textContent = currentOffer.offer.title;
+    cardElement.querySelector('.popup__text--address').textContent = currentOffer.offer.address;
+    cardElement.querySelector('.popup__text--price').textContent = currentOffer.offer.price + '₽/ночь';
+    cardElement.querySelector('.popup__type').textContent = typeText;
+    cardElement.querySelector('.popup__text--capacity').textContent = capacityText;
+    cardElement.querySelector('.popup__text--time').textContent = timeText;
+    cardElement.querySelector('.popup__features').textContent = currentOffer.offer.features;
+    cardElement.querySelector('.popup__description').textContent = currentOffer.offer.description;
+    cardElement.querySelector('.popup__avatar').src = currentOffer.author.avatar;
 
     photosArray.forEach(function (imageSrc) {
       var secondImageCopy = imageCopy.cloneNode();
@@ -55,7 +63,8 @@
 
     imagesWrapperElement.appendChild(photosFragment);
 
-    return cardElement;
+    deleteCards();
+    map.appendChild(cardElement);
   };
 
   window.card = {

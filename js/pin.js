@@ -1,34 +1,58 @@
 'use strict';
 
 (function () {
-  var pinDataArray = [];
+  function renderPins(pinsArray) {
+    var map = document.querySelector('.map');
 
-  for (var i = 0; i < window.data.sumPins; i++) {
-    pinDataArray.push(window.data.offerDescription());
+    var pins = pinsArray.map(function (item) {
+      return getPin(item);
+    });
 
+    pins.forEach(function (item) {
+      map.appendChild(item);
+    });
+  }
+
+  function getPin(pinData) {
     var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+    var pin = pinTemplate.cloneNode(true);
+    pin.dataset.id = pinData.id;
 
-    // Создаем пины и заполняем их данными из массива
-    var getPin = function (pinData) {
-      var pin = pinTemplate.cloneNode(true);
-      var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
-      var pinStyleRight = pinData.location.y - pin.offsetHeight;
+    pin.addEventListener('click', function (e) {
+      var pinNumber = e.currentTarget.dataset.id;
 
-      pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
-      pin.querySelector('img').src = pinData.author.avatar;
-      pin.querySelector('img').alt = pinData.offer.title;
+      var currentOrderData = window.ordersData.find(function (item) {
+        item.id.toString();
+        return item.id === pinNumber;
+      });
 
-      return pin;
-    };
+      window.card.createModalElement(currentOrderData);
+    });
+
+    var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
+    var pinStyleRight = pinData.location.y - pin.offsetHeight;
+
+    pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
+    pin.querySelector('img').src = pinData.author.avatar;
+    pin.querySelector('img').alt = pinData.offer.title;
+
+    return pin;
   }
 
-  var fragmentPins = document.createDocumentFragment();
-  for (var j = 0; j < window.data.sumPins; j++) {
-    fragmentPins.appendChild(getPin(pinDataArray[j]));
+  // Удаляем пины
+  function deletePins() {
+    var map = document.querySelector('.map');
+    var pins = map.querySelectorAll('.map__pin');
+
+    pins.forEach(function (item) {
+      var isMainPin = item.classList.contains('map__pin--main');
+
+      if (!isMainPin) {
+        item.parentNode.removeChild(item);
+      }
+    });
   }
 
-  window.pin = {
-    pinDataArray: pinDataArray,
-    fragmentPins: fragmentPins,
-  };
+  window.renderPins = renderPins;
+  window.deletePins = deletePins;
 })();
