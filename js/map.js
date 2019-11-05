@@ -44,4 +44,3 @@
 
   mainAddress.value = mainPinAddress;
 })();
-
