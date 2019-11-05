@@ -2,9 +2,10 @@
 
 (function () {
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var ESC_KEYCODE = 27;
 
   // Проверяем тип жилья
-  var checkType = function (currentOffer) {
+  function checkType(currentOffer) {
     switch (currentOffer.offer.type) {
       case 'flat':
         var typeElement = 'Квартира';
@@ -19,7 +20,7 @@
         typeElement = 'Дворец';
     }
     return typeElement;
-  };
+  }
 
   // Удаляем карточку с объявлением
   function deleteCards() {
@@ -32,7 +33,7 @@
   }
 
   // Создаем модальный элемент с описанием объявления
-  var createModalElement = function (currentOffer) {
+  function createModalElement(currentOffer) {
     var map = document.querySelector('.map');
     var cardElement = cardTemplate.cloneNode(true);
     var typeText = checkType(currentOffer);
@@ -44,6 +45,7 @@
     imagesWrapperElement.innerHTML = '';
     var photosArray = currentOffer.offer.photos;
     var photosFragment = document.createDocumentFragment();
+    var closePopup = document.querySelector('.popup__close');
 
     cardElement.querySelector('.popup__title').textContent = currentOffer.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = currentOffer.offer.address;
@@ -62,10 +64,19 @@
     });
 
     imagesWrapperElement.appendChild(photosFragment);
-
     deleteCards();
     map.appendChild(cardElement);
-  };
+
+    closePopup.addEventListener('click', function () {
+      deleteCards();
+    });
+
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        deleteCards();
+      }
+    });
+  }
 
   window.card = {
     createModalElement: createModalElement,

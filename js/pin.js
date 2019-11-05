@@ -16,24 +16,22 @@
   function getPin(pinData) {
     var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var pin = pinTemplate.cloneNode(true);
+    var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
+    var pinStyleRight = pinData.location.y - pin.offsetHeight;
+
     pin.dataset.id = pinData.id;
+    pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
+    pin.querySelector('img').src = pinData.author.avatar;
+    pin.querySelector('img').alt = pinData.offer.title;
 
     pin.addEventListener('click', function (e) {
       var pinNumber = e.currentTarget.dataset.id;
-
       var currentOrderData = window.ordersData.find(function (item) {
         return item.id.toString() === pinNumber;
       });
 
       window.card.createModalElement(currentOrderData);
     });
-
-    var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
-    var pinStyleRight = pinData.location.y - pin.offsetHeight;
-
-    pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
-    pin.querySelector('img').src = pinData.author.avatar;
-    pin.querySelector('img').alt = pinData.offer.title;
 
     return pin;
   }

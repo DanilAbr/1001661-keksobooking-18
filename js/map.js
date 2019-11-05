@@ -2,7 +2,7 @@
 
 (function () {
   var map = document.querySelector('.map');
-  var mapPinMain = document.querySelector('.map__pin--main');
+  var mapPinMain = map.querySelector('.map__pin--main');
   var mainAddress = document.querySelector('#address');
   var mapPinMainTop = parseInt(mapPinMain.style.top, 10);
   var mapPinMainLeft = parseInt(mapPinMain.style.left, 10);
@@ -11,7 +11,7 @@
   var ENTER_KEYCODE = 13;
 
   // Переводим в активный режим
-  var toActiveMode = function () {
+  function toActiveMode() {
     function success(data) {
       data.forEach(function (item, i) {
         item.id = i;
@@ -30,9 +30,9 @@
     window.form.mapFilters.classList.remove('ad-form--disabled');
     mainAddress.value = mainPinAddress;
     window.load(success, error);
-  };
+  }
 
-  mapPinMain.addEventListener('mousedown', function () {
+  mapPinMain.addEventListener('click', function () {
     toActiveMode();
   });
 
@@ -44,4 +44,3 @@
 
   mainAddress.value = mainPinAddress;
 })();
-
