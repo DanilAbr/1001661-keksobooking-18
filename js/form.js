@@ -7,9 +7,15 @@
   var mapFilters = document.querySelector('.map__filters');
   var adForm = document.querySelector('.ad-form');
   var selectType = document.querySelector('#type');
-  var price = document.querySelector('#price');
+  var price = adForm.querySelector('#price');
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
+  var pinMain = document.querySelector('.map__pin--main');
+  var pinMainStartX = parseInt(pinMain.style.top, 10);
+  var pinMainStartY = parseInt(pinMain.style.left, 10);
+  var ESC_KEYCODE = 27;
+  var main = document.querySelector('main');
+  var map = document.querySelector('.map');
 
   // Добавляем аттрибут disabled всем <input> и <select> формы .ad-form
   function fieldsetDisabled() {
@@ -93,6 +99,74 @@
 
   timeOut.addEventListener('change', function () {
     timeIn.value = timeOut.value;
+  });
+
+  var URL = 'https://js.dump.academy/keksobookin';
+  window.upload = function (data, onSuccess) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+
+    xhr.addEventListener('load', function () {
+      if (xhr.status === 200) {
+        onSuccess(xhr.response);
+      } else {
+        createErrorMessage();
+      }
+    });
+
+    xhr.open('POST', URL);
+    xhr.send(data);
+  };
+
+  // Возвращаем главный пин на изначальное место
+  function returnPinMain() {
+    pinMain.style.top = pinMainStartX + 'px';
+    pinMain.style.left = pinMainStartY + 'px';
+  }
+
+  // Выводим сообщение об успешной отправке формы
+  function createSuccessMessage() {
+    var successTemplate = document.querySelector('#success').content.querySelector('.success');
+    var successElement = successTemplate.cloneNode(true);
+    map.appendChild(successElement);
+
+    successElement.addEventListener('click', function () {
+      map.removeChild(successElement);
+    });
+
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        successElement.remove();
+      }
+    });
+  }
+  // Создаем сообщение об ошибке
+  function createErrorMessage() {
+    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorElement = errorTemplate.cloneNode(true);
+    main.appendChild(errorElement);
+
+    errorElement.addEventListener('click', function () {
+      errorElement.remove();
+    });
+
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        errorElement.remove();
+      }
+    });
+  }
+
+  adForm.addEventListener('submit', function (evt) {
+    window.upload(new FormData(adForm), function () {
+      window.card.deleteCards();
+      window.deletePins();
+      adForm.reset();
+      returnPinMain();
+      window.createAddress();
+      createSuccessMessage();
+    });
+    evt.preventDefault();
   });
 
   window.form = {

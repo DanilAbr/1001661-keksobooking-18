@@ -52,7 +52,6 @@
     });
   }
 
-
   window.renderPins = renderPins;
   window.deletePins = deletePins;
 })();

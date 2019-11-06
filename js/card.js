@@ -80,6 +80,7 @@
   }
 
   window.card = {
+    deleteCards: deleteCards,
     createModalElement: createModalElement,
   };
 })();
