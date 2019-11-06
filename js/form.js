@@ -101,7 +101,7 @@
     timeIn.value = timeOut.value;
   });
 
-  var URL = 'https://js.dump.academy/keksobookin';
+  var URL = 'https://js.dump.academy/keksobooking';
   window.upload = function (data, onSuccess) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
