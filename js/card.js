@@ -45,7 +45,6 @@
     imagesWrapperElement.innerHTML = '';
     var photosArray = currentOffer.offer.photos;
     var photosFragment = document.createDocumentFragment();
-    var closePopup = document.querySelector('.popup__close');
 
     cardElement.querySelector('.popup__title').textContent = currentOffer.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = currentOffer.offer.address;
@@ -66,6 +65,8 @@
     imagesWrapperElement.appendChild(photosFragment);
     deleteCards();
     map.appendChild(cardElement);
+
+    var closePopup = document.querySelector('.popup__close');
 
     closePopup.addEventListener('click', function () {
       deleteCards();
