@@ -46,6 +46,7 @@
     var photosArray = currentOffer.offer.photos;
     var photosFragment = document.createDocumentFragment();
 
+
     cardElement.querySelector('.popup__title').textContent = currentOffer.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = currentOffer.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = currentOffer.offer.price + '₽/ночь';

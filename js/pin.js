@@ -52,6 +52,8 @@
     });
   }
 
-  window.renderPins = renderPins;
-  window.deletePins = deletePins;
+  window.pin = {
+    renderPins: renderPins,
+    deletePins: deletePins,
+  };
 })();
