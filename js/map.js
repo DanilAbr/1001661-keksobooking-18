@@ -4,6 +4,7 @@
   var map = document.querySelector('.map');
   var pinMain = map.querySelector('.map__pin--main');
   var mainAddress = document.querySelector('#address');
+  var inputType = document.querySelector('#housing-type');
   var ENTER_KEYCODE = 13;
 
   createAddress();
@@ -15,7 +16,20 @@
         item.id = i;
       });
       window.ordersData = data;
-      window.renderPins(data);
+      window.pin.renderPins(getFilterPins());
+    }
+
+    inputType.addEventListener('change', function () {
+      window.pin.deletePins();
+      window.pin.renderPins(getFilterPins());
+    });
+
+    function getFilterPins() {
+      var filterPins = window.ordersData.filter(function (it) {
+        return it.offer.type === inputType.value || inputType.value === 'any';
+      }).
+      slice(0, 5);
+      return filterPins;
     }
 
     function error() {
@@ -98,5 +112,7 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
-  window.createAddress = createAddress;
+  window.map = {
+    createAddress: createAddress,
+  };
 })();
