@@ -4,8 +4,10 @@
   var fieldset = document.querySelectorAll('.ad-form__element');
   var selectRooms = document.querySelector('#room_number');
   var selectGuests = document.querySelector('#capacity');
+  var selectFilter = document.querySelectorAll('.map__filter');
   var mapFilters = document.querySelector('.map__filters');
   var adForm = document.querySelector('.ad-form');
+  var adFormReset = adForm.querySelector('.ad-form__reset');
   var selectType = document.querySelector('#type');
   var price = adForm.querySelector('#price');
   var timeIn = document.querySelector('#timein');
@@ -16,23 +18,38 @@
   var ESC_KEYCODE = 27;
   var main = document.querySelector('main');
   var map = document.querySelector('.map');
+  var URL = 'https://js.dump.academy/keksobooking';
 
-  // Добавляем аттрибут disabled всем <input> и <select> формы .ad-form
-  function fieldsetDisabled() {
-    for (var k = 0; k < fieldset.length; k++) {
-      fieldset[k].setAttribute('disabled', true);
-    }
+  var fieldsetFilter = document.querySelectorAll('.map__features');
+
+  allDisabled();
+
+  // Добавляем аттрибут disabled
+  function someDisabled(arr) {
+    arr.forEach(function (it) {
+      it.setAttribute('disabled', true);
+    });
   }
 
-  // Удаляем аттрибут disabled всем <input> и <select> формы .ad-form
-  function fieldsetActive() {
-    for (var k = 0; k < fieldset.length; k++) {
-      fieldset[k].removeAttribute('disabled', true);
-    }
+  // Удаляем аттрибут disabled
+  function someNoDisabled(arr) {
+    arr.forEach(function (it) {
+      it.removeAttribute('disabled', true);
+    });
   }
 
-  fieldsetDisabled();
-  mapFilters.classList.add('ad-form--disabled');
+  // Блокируем <input> и <select> формы и фильтрации объявлений
+  function allDisabled() {
+    someDisabled(fieldset);
+    someDisabled(fieldsetFilter);
+    someDisabled(selectFilter);
+  }
+  // Разблокируем <input> и <select> формы и фильтрации объявлений
+  function allNoDisabled() {
+    someNoDisabled(fieldset);
+    someNoDisabled(fieldsetFilter);
+    someNoDisabled(selectFilter);
+  }
 
   selectGuests.options[2].setAttribute('selected', true);
   // Убираем варианты выбора количества гостей в зависимости от выбранного количества комнат
@@ -74,10 +91,6 @@
   // Изменяем значение минимальной цены в зависимости от типа жилья
   selectType.onchange = function () {
     switch (this.value) {
-      case 'bungalo':
-        price.setAttribute('min', 0);
-        price.setAttribute('placeholder', 0);
-        break;
       case 'flat':
         price.setAttribute('min', 1000);
         price.setAttribute('placeholder', 1000);
@@ -90,6 +103,10 @@
         price.setAttribute('min', 10000);
         price.setAttribute('placeholder', 10000);
         break;
+      default:
+        price.setAttribute('min', 0);
+        price.setAttribute('placeholder', 0);
+        break;
     }
   };
 
@@ -100,23 +117,6 @@
   timeOut.addEventListener('change', function () {
     timeIn.value = timeOut.value;
   });
-
-  var URL = 'https://js.dump.academy/keksobooking';
-  window.upload = function (data, onSuccess) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onSuccess(xhr.response);
-      } else {
-        createErrorMessage();
-      }
-    });
-
-    xhr.open('POST', URL);
-    xhr.send(data);
-  };
 
   // Возвращаем главный пин на изначальное место
   function returnPinMain() {
@@ -157,20 +157,51 @@
     });
   }
 
+  // Переводим в неактивный режим
+  function noActiveState() {
+    map.classList.add('map--faded');
+    adForm.classList.add('ad-form--disabled');
+    mapFilters.classList.add('ad-form--disabled');
+    allDisabled();
+    adForm.reset();
+    mapFilters.reset();
+    returnPinMain();
+    window.card.deleteCard();
+    window.pin.deletePins();
+    window.map.createNoActiveAddress();
+  }
+
   adForm.addEventListener('submit', function (evt) {
     window.upload(new FormData(adForm), function () {
-      window.card.deleteCards();
-      window.deletePins();
-      adForm.reset();
-      returnPinMain();
-      window.createAddress();
+      noActiveState();
       createSuccessMessage();
     });
     evt.preventDefault();
   });
 
+  adFormReset.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    noActiveState();
+  });
+
+  window.upload = function (data, onSuccess) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+
+    xhr.addEventListener('load', function () {
+      if (xhr.status === 200) {
+        onSuccess(xhr.response);
+      } else {
+        createErrorMessage();
+      }
+    });
+
+    xhr.open('POST', URL);
+    xhr.send(data);
+  };
+
   window.form = {
-    fieldsetActive: fieldsetActive,
+    allNoDisabled: allNoDisabled,
     adForm: adForm,
     mapFilters: mapFilters,
   };
