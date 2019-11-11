@@ -1,18 +1,7 @@
 'use strict';
 
 (function () {
-  function renderPins(pinsArray) {
-    var map = document.querySelector('.map');
-
-    var pins = pinsArray.map(function (item) {
-      return getPin(item);
-    });
-
-    pins.forEach(function (item) {
-      map.appendChild(item);
-    });
-  }
-
+  // Создаем пин
   function getPin(pinData) {
     var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var pin = pinTemplate.cloneNode(true);
@@ -49,6 +38,19 @@
       if (!isMainPin) {
         item.parentNode.removeChild(item);
       }
+    });
+  }
+
+  // Выводим пины на карту
+  function renderPins(pinsArray) {
+    var map = document.querySelector('.map');
+
+    var pins = pinsArray.map(function (item) {
+      return getPin(item);
+    });
+
+    pins.forEach(function (item) {
+      map.appendChild(item);
     });
   }
 

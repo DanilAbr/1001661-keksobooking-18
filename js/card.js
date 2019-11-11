@@ -1,15 +1,12 @@
 'use strict';
 
 (function () {
-  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var ESC_KEYCODE = 27;
 
   // Проверяем тип жилья
   function checkType(currentOffer) {
+    var typeElement;
     switch (currentOffer.offer.type) {
-      case 'flat':
-        var typeElement = 'Квартира';
-        break;
       case 'bungalo':
         typeElement = 'Бунгало';
         break;
@@ -18,23 +15,30 @@
         break;
       case 'palace':
         typeElement = 'Дворец';
+        break;
+      default:
+        typeElement = 'Квартира';
+        break;
     }
     return typeElement;
   }
 
   // Удаляем карточку с объявлением
-  function deleteCards() {
+  function deleteCard() {
     var map = document.querySelector('.map');
-    var cards = map.querySelectorAll('.map__card');
+    var card = map.querySelectorAll('.map__card');
 
-    cards.forEach(function (item) {
-      item.parentNode.removeChild(item);
-    });
+    if (card) {
+      card.forEach(function (item) {
+        item.parentNode.removeChild(item);
+      });
+    }
   }
 
   // Создаем модальный элемент с описанием объявления
   function createModalElement(currentOffer) {
     var map = document.querySelector('.map');
+    var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var cardElement = cardTemplate.cloneNode(true);
     var typeText = checkType(currentOffer);
     var capacityText = currentOffer.offer.rooms + ' комнаты для ' + currentOffer.offer.guests + ' гостей';
@@ -42,10 +46,9 @@
     var imagesWrapperElement = cardElement.querySelector('.popup__photos');
     var imageElement = cardElement.querySelector('.popup__photo');
     var imageCopy = imageElement.cloneNode();
-    imagesWrapperElement.innerHTML = '';
     var photosArray = currentOffer.offer.photos;
     var photosFragment = document.createDocumentFragment();
-
+    imagesWrapperElement.innerHTML = '';
 
     cardElement.querySelector('.popup__title').textContent = currentOffer.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = currentOffer.offer.address;
@@ -64,24 +67,24 @@
     });
 
     imagesWrapperElement.appendChild(photosFragment);
-    deleteCards();
+    deleteCard();
     map.appendChild(cardElement);
 
     var closePopup = document.querySelector('.popup__close');
 
     closePopup.addEventListener('click', function () {
-      deleteCards();
+      deleteCard();
     });
 
     document.addEventListener('keydown', function (evt) {
       if (evt.keyCode === ESC_KEYCODE) {
-        deleteCards();
+        deleteCard();
       }
     });
   }
 
   window.card = {
-    deleteCards: deleteCards,
+    deleteCard: deleteCard,
     createModalElement: createModalElement,
   };
 })();
