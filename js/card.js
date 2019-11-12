@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-
   // Проверяем тип жилья
   function checkType(currentOffer) {
     var typeElement;
@@ -25,11 +23,10 @@
 
   // Удаляем карточку с объявлением
   function deleteCard() {
-    var map = document.querySelector('.map');
-    var card = map.querySelectorAll('.map__card');
+    var cards = window.data.map.querySelectorAll('.map__card');
 
-    if (card) {
-      card.forEach(function (item) {
+    if (cards) {
+      cards.forEach(function (item) {
         item.parentNode.removeChild(item);
       });
     }
@@ -37,7 +34,6 @@
 
   // Создаем модальный элемент с описанием объявления
   function createModalElement(currentOffer) {
-    var map = document.querySelector('.map');
     var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var cardElement = cardTemplate.cloneNode(true);
     var typeText = checkType(currentOffer);
@@ -56,7 +52,15 @@
     cardElement.querySelector('.popup__type').textContent = typeText;
     cardElement.querySelector('.popup__text--capacity').textContent = capacityText;
     cardElement.querySelector('.popup__text--time').textContent = timeText;
-    cardElement.querySelector('.popup__features').textContent = currentOffer.offer.features;
+
+    var featureIcons = document.querySelectorAll('.map__checkbox');
+    // featureIcons.forEach(function () {
+
+    // });
+
+    var elem = featureIcons[0].cloneNode(true);
+    cardElement.querySelector('.popup__features').appendChild(elem);
+
     cardElement.querySelector('.popup__description').textContent = currentOffer.offer.description;
     cardElement.querySelector('.popup__avatar').src = currentOffer.author.avatar;
 
@@ -68,19 +72,23 @@
 
     imagesWrapperElement.appendChild(photosFragment);
     deleteCard();
-    map.appendChild(cardElement);
+    window.data.map.appendChild(cardElement);
 
-    var closePopup = document.querySelector('.popup__close');
+    var closeButton = document.querySelector('.popup__close');
 
-    closePopup.addEventListener('click', function () {
+    function onCloseButtonClick() {
       deleteCard();
-    });
+    }
 
-    document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
+    function onPopupEscPress(evt) {
+      if (evt.keyCode === window.data.ESC_KEYCODE) {
         deleteCard();
+        document.removeEventListener('keydown', onPopupEscPress);
       }
-    });
+    }
+
+    closeButton.addEventListener('click', onCloseButtonClick);
+    document.addEventListener('keydown', onPopupEscPress);
   }
 
   window.card = {

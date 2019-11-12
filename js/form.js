@@ -1,56 +1,63 @@
 'use strict';
 
 (function () {
-  var fieldset = document.querySelectorAll('.ad-form__element');
-  var selectRooms = document.querySelector('#room_number');
-  var selectGuests = document.querySelector('#capacity');
-  var selectFilter = document.querySelectorAll('.map__filter');
-  var mapFilters = document.querySelector('.map__filters');
+  var URL = 'https://js.dump.academy/keksobooking';
+  var MIN_PRICE_BUNGALO = 0;
+  var MIN_PRICE_FLAT = 1000;
+  var MIN_PRICE_HOUSE = 5000;
+  var MIN_PRICE_PALACE = 10000;
+
   var adForm = document.querySelector('.ad-form');
+  var fieldsets = adForm.querySelectorAll('.ad-form__element');
+  var selectRooms = adForm.querySelector('#room_number');
+  var selectGuests = adForm.querySelector('#capacity');
   var adFormReset = adForm.querySelector('.ad-form__reset');
-  var selectType = document.querySelector('#type');
+  var selectType = adForm.querySelector('#type');
   var price = adForm.querySelector('#price');
-  var timeIn = document.querySelector('#timein');
-  var timeOut = document.querySelector('#timeout');
+  var timeIn = adForm.querySelector('#timein');
+  var timeOut = adForm.querySelector('#timeout');
+
+  var main = document.querySelector('main');
   var pinMain = document.querySelector('.map__pin--main');
   var pinMainStartX = parseInt(pinMain.style.top, 10);
   var pinMainStartY = parseInt(pinMain.style.left, 10);
-  var ESC_KEYCODE = 27;
-  var main = document.querySelector('main');
-  var map = document.querySelector('.map');
-  var URL = 'https://js.dump.academy/keksobooking';
 
-  var fieldsetFilter = document.querySelectorAll('.map__features');
+  var fieldsetsFilter = document.querySelectorAll('.map__features');
+  var selectFilter = document.querySelectorAll('.map__filter');
+  var mapFilters = document.querySelector('.map__filters');
 
-  allDisabled();
+  disableAll();
 
   // Добавляем аттрибут disabled
-  function someDisabled(arr) {
-    arr.forEach(function (it) {
-      it.setAttribute('disabled', true);
+  function disableSome(array) {
+    array.forEach(function (item) {
+      item.setAttribute('disabled', true);
     });
   }
 
   // Удаляем аттрибут disabled
-  function someNoDisabled(arr) {
-    arr.forEach(function (it) {
-      it.removeAttribute('disabled', true);
+  function enableSome(array) {
+    array.forEach(function (item) {
+      item.removeAttribute('disabled', true);
     });
   }
 
   // Блокируем <input> и <select> формы и фильтрации объявлений
-  function allDisabled() {
-    someDisabled(fieldset);
-    someDisabled(fieldsetFilter);
-    someDisabled(selectFilter);
+  function disableAll() {
+    disableSome(fieldsets);
+    disableSome(fieldsetsFilter);
+    disableSome(selectFilter);
   }
   // Разблокируем <input> и <select> формы и фильтрации объявлений
-  function allNoDisabled() {
-    someNoDisabled(fieldset);
-    someNoDisabled(fieldsetFilter);
-    someNoDisabled(selectFilter);
+  function enableAll() {
+    enableSome(fieldsets);
+    enableSome(fieldsetsFilter);
+    enableSome(selectFilter);
   }
 
+  selectGuests.options[0].setAttribute('disabled', true);
+  selectGuests.options[1].setAttribute('disabled', true);
+  selectGuests.options[3].setAttribute('disabled', true);
   selectGuests.options[2].setAttribute('selected', true);
   // Убираем варианты выбора количества гостей в зависимости от выбранного количества комнат
   selectRooms.onchange = function () {
@@ -92,20 +99,20 @@
   selectType.onchange = function () {
     switch (this.value) {
       case 'flat':
-        price.setAttribute('min', 1000);
-        price.setAttribute('placeholder', 1000);
+        price.setAttribute('min', MIN_PRICE_FLAT);
+        price.setAttribute('placeholder', MIN_PRICE_FLAT);
         break;
       case 'house':
-        price.setAttribute('min', 5000);
-        price.setAttribute('placeholder', 5000);
+        price.setAttribute('min', MIN_PRICE_HOUSE);
+        price.setAttribute('placeholder', MIN_PRICE_HOUSE);
         break;
       case 'palace':
-        price.setAttribute('min', 10000);
-        price.setAttribute('placeholder', 10000);
+        price.setAttribute('min', MIN_PRICE_PALACE);
+        price.setAttribute('placeholder', MIN_PRICE_PALACE);
         break;
       default:
-        price.setAttribute('min', 0);
-        price.setAttribute('placeholder', 0);
+        price.setAttribute('min', MIN_PRICE_BUNGALO);
+        price.setAttribute('placeholder', MIN_PRICE_BUNGALO);
         break;
     }
   };
@@ -128,14 +135,14 @@
   function createSuccessMessage() {
     var successTemplate = document.querySelector('#success').content.querySelector('.success');
     var successElement = successTemplate.cloneNode(true);
-    map.appendChild(successElement);
+    window.data.map.appendChild(successElement);
 
     successElement.addEventListener('click', function () {
-      map.removeChild(successElement);
+      window.data.map.removeChild(successElement);
     });
 
     document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (evt.keyCode === window.data.ESC_KEYCODE) {
         successElement.remove();
       }
     });
@@ -151,18 +158,18 @@
     });
 
     document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (evt.keyCode === window.data.ESC_KEYCODE) {
         errorElement.remove();
       }
     });
   }
 
   // Переводим в неактивный режим
-  function noActiveState() {
-    map.classList.add('map--faded');
+  function removeActiveState() {
+    window.data.map.classList.add('map--faded');
     adForm.classList.add('ad-form--disabled');
     mapFilters.classList.add('ad-form--disabled');
-    allDisabled();
+    disableAll();
     adForm.reset();
     mapFilters.reset();
     returnPinMain();
@@ -172,8 +179,8 @@
   }
 
   adForm.addEventListener('submit', function (evt) {
-    window.upload(new FormData(adForm), function () {
-      noActiveState();
+    window.form.upload(new FormData(adForm), function () {
+      removeActiveState();
       createSuccessMessage();
     });
     evt.preventDefault();
@@ -181,10 +188,10 @@
 
   adFormReset.addEventListener('click', function (evt) {
     evt.preventDefault();
-    noActiveState();
+    removeActiveState();
   });
 
-  window.upload = function (data, onSuccess) {
+  function upload(data, onSuccess) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -200,8 +207,11 @@
     xhr.send(data);
   };
 
+  // window.upload = upload;
+
   window.form = {
-    allNoDisabled: allNoDisabled,
+    upload: upload,
+    enableAll: enableAll,
     adForm: adForm,
     mapFilters: mapFilters,
   };

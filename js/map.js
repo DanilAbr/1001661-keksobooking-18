@@ -1,51 +1,55 @@
 'use strict';
 
 (function () {
-  var map = document.querySelector('.map');
-  var pinMain = map.querySelector('.map__pin--main');
+  var SUM_PINS = 5;
+  var MIN_PRICE = 10000;
+  var MAX_PRICE = 50000;
+
+  var pinMain = document.querySelector('.map__pin--main');
   var mainAddress = document.querySelector('#address');
   var inputType = document.querySelector('#housing-type');
   var inputRooms = document.querySelector('#housing-rooms');
   var inputGuests = document.querySelector('#housing-guests');
   var inputPrice = document.querySelector('#housing-price');
-  var ENTER_KEYCODE = 13;
+  var dataLoaded = false;
 
   createNoActiveAddress();
 
   // Переводим в активный режим
-  function toActiveMode() {
-    var mapCheckbox = document.querySelectorAll('.map__checkbox');
+  function enterActiveMode() {
+    var mapCheckboxes = document.querySelectorAll('.map__checkbox');
     var filterForm = document.querySelector('.map__filters');
 
     createAddress();
 
-    function success(data) {
+    function onSuccess(data) {
+      dataLoaded = true;
       data.forEach(function (item, i) {
         item.id = i;
       });
       window.ordersData = data;
-      window.pin.renderPins(getFilterPins());
+      window.pin.render(getFilterPins());
     }
 
     // Отображаем отфильтрованные пины
     function displayPins() {
       window.pin.deletePins();
-      window.pin.renderPins(getFilterPins());
+      window.pin.render(getFilterPins());
     }
 
     // Фильтруем пины
     function getFilterPins() {
       var filterPins = window.ordersData.
-        filter(function (it) {
-          return it.offer.type === inputType.value || inputType.value === 'any';
+        filter(function (item) {
+          return item.offer.type === inputType.value || inputType.value === 'any';
         }).
-        filter(function (it) {
+        filter(function (item) {
           function getValue() {
-            var itPrice = it.offer.price;
+            var itemPrice = item.offer.price;
             var value = 'any';
-            if (itPrice < 10000) {
+            if (itemPrice < MIN_PRICE) {
               value = 'low';
-            } else if (itPrice >= 10000 && itPrice <= 50000) {
+            } else if (itemPrice >= MIN_PRICE && itemPrice <= MAX_PRICE) {
               value = 'middle';
             } else {
               value = 'high';
@@ -54,30 +58,30 @@
           }
           return getValue() === inputPrice.value || inputPrice.value === 'any';
         }).
-        filter(function (it) {
-          return it.offer.rooms === Number(inputRooms.value) || inputRooms.value === 'any';
+        filter(function (item) {
+          return item.offer.rooms === Number(inputRooms.value) || inputRooms.value === 'any';
         }).
-        filter(function (it) {
-          return it.offer.guests === Number(inputGuests.value) || inputGuests.value === 'any';
+        filter(function (item) {
+          return item.offer.guests === Number(inputGuests.value) || inputGuests.value === 'any';
         });
 
       var additionalyParams = window.additionalyParams;
       for (var key in additionalyParams) {
         if (additionalyParams.hasOwnProperty(key)) {
-          filterPins = filterPins.filter(function (it) {
+          filterPins = filterPins.filter(function (item) {
             if (additionalyParams[key]) {
-              return it.offer.features.includes(key);
+              return item.offer.features.includes(key);
             }
             return true;
           });
         }
       }
 
-      filterPins = filterPins.slice(0, 5);
+      filterPins = filterPins.slice(0, SUM_PINS);
       return filterPins;
     }
 
-    mapCheckbox.forEach(function (item) {
+    mapCheckboxes.forEach(function (item) {
       item.addEventListener('click', function (evt) {
         window.additionalyParams[evt.currentTarget.value] = evt.currentTarget.checked;
       });
@@ -92,11 +96,11 @@
       conditioner: false,
     };
 
-    window.form.allNoDisabled();
-    map.classList.remove('map--faded');
+    window.form.enableAll();
+    window.data.map.classList.remove('map--faded');
     window.form.adForm.classList.remove('ad-form--disabled');
     window.form.mapFilters.classList.remove('ad-form--disabled');
-    window.load(success);
+    window.load(onSuccess);
 
     var displayPinsWrapper = window.debounce(displayPins);
 
@@ -107,12 +111,14 @@
   }
 
   pinMain.addEventListener('mousedown', function () {
-    toActiveMode();
+    if (!dataLoaded) {
+      enterActiveMode();
+    }
   });
 
   pinMain.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
-      toActiveMode();
+    if (evt.keyCode === window.data.ENTER_KEYCODE && !dataLoaded) {
+      enterActiveMode();
     }
   });
 
@@ -123,8 +129,6 @@
     var mainPinAddress = (pinMainLeft + pinMainCenter) + ', ' + (pinMainTop + pinMainCenter);
     mainAddress.value = mainPinAddress;
   }
-
-  window.createNoActiveAddress = createNoActiveAddress;
 
   // Создаем адрес для поля "Адрес"
   function createAddress() {
@@ -165,7 +169,7 @@
       var minY = 120 - pinMainHeight;
       var maxY = 620 - pinMainHeight;
       var minX = -(pinMainWidth / 2);
-      var maxX = map.clientWidth - pinMainWidth / 2;
+      var maxX = window.data.map.clientWidth - pinMainWidth / 2;
 
       if (pinMain.offsetTop < minY || pinMain.offsetTop > maxY) {
         pinMain.style.top = (pinMain.offsetTop + shift.y) + 'px';
