@@ -7,7 +7,7 @@
 
   window.data = {
     ENTER_KEYCODE: ENTER_KEYCODE,
-    map: map,
     ESC_KEYCODE: ESC_KEYCODE,
+    map: map,
   };
 })();

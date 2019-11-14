@@ -19,12 +19,9 @@
 
   // Удаляем карточку с объявлением
   function deleteCard() {
-    var cards = window.data.map.querySelectorAll('.map__card');
-
-    if (cards) {
-      cards.forEach(function (item) {
-        item.parentNode.removeChild(item);
-      });
+    var card = window.data.map.querySelector('.map__card');
+    if (card) {
+      card.parentNode.removeChild(card);
     }
   }
 
@@ -44,7 +41,7 @@
   function renderPlaceType(currentOffer, cardElement) {
     // Показываем тип квартиры
     // ... есди данных нет - удаляем элемент
-    var popupTypeElement = cardElement.querySelector('.popup__type')
+    var popupTypeElement = cardElement.querySelector('.popup__type');
     try {
       var type = currentOffer.offer.type;
       var typeText = getTypeName(type);
@@ -63,13 +60,11 @@
       popupCapacityElement.textContent = capacityText;
     } catch (e) {
       popupCapacityElement.parentNode.removeChild(popupCapacityElement);
-    };
-  };
+    }
+  }
 
   // Создаем модальный элемент с описанием объявления
   function createModalElement(currentOffer) {
-    console.log(currentOffer)
-
     // Создаем копию карточки
     var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var cardElement = cardTemplate.cloneNode(true);
@@ -96,9 +91,7 @@
     renderPlaceType(currentOffer, cardElement);
     renderPlaceCapacity(currentOffer, cardElement);
 
-
     cardElement.querySelector('.popup__text--time').textContent = timeText;
-
     cardElement.querySelector('.popup__description').textContent = currentOffer.offer.description;
     cardElement.querySelector('.popup__avatar').src = currentOffer.author.avatar;
 
@@ -116,13 +109,19 @@
 
     function onCloseButtonClick() {
       deleteCard();
+      removeEventListeners();
     }
 
     function onPopupEscPress(evt) {
       if (evt.keyCode === window.data.ESC_KEYCODE) {
         deleteCard();
-        document.removeEventListener('keydown', onPopupEscPress);
+        removeEventListeners();
       }
+    }
+
+    function removeEventListeners() {
+      closeButton.removeEventListener('click', onCloseButtonClick);
+      document.removeEventListener('keydown', onPopupEscPress);
     }
 
     closeButton.addEventListener('click', onCloseButtonClick);
@@ -130,7 +129,7 @@
   }
 
   window.card = {
-    deleteCard: deleteCard,
+    delete: deleteCard,
     createModalElement: createModalElement,
   };
 })();

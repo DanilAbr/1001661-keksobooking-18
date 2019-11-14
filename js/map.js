@@ -10,7 +10,7 @@
   var inputType = document.querySelector('#housing-type');
   var inputRooms = document.querySelector('#housing-rooms');
   var inputGuests = document.querySelector('#housing-guests');
-  var inputPrice = document.querySelector('#housing-price');
+  var housingPrice = document.querySelector('#housing-price');
   var dataLoaded = false;
 
   createNoActiveAddress();
@@ -37,34 +37,29 @@
       window.pin.render(getFilterPins());
     }
 
-    // Фильтруем пины
-    function getFilterPins() {
-      var filterPins = window.ordersData.
-        filter(function (item) {
-          return item.offer.type === inputType.value || inputType.value === 'any';
-        }).
-        filter(function (item) {
-          function getValue() {
-            var itemPrice = item.offer.price;
-            var value = 'any';
-            if (itemPrice < MIN_PRICE) {
-              value = 'low';
-            } else if (itemPrice >= MIN_PRICE && itemPrice <= MAX_PRICE) {
-              value = 'middle';
-            } else {
-              value = 'high';
-            }
-            return value;
-          }
-          return getValue() === inputPrice.value || inputPrice.value === 'any';
-        }).
-        filter(function (item) {
-          return item.offer.rooms === Number(inputRooms.value) || inputRooms.value === 'any';
-        }).
-        filter(function (item) {
-          return item.offer.guests === Number(inputGuests.value) || inputGuests.value === 'any';
-        });
+    function getPriceValue(item) {
+      var value;
+      var itemPrice = item.offer.price;
+      if (itemPrice < MIN_PRICE) {
+        return 'low';
+      } else if (itemPrice >= MIN_PRICE && itemPrice <= MAX_PRICE) {
+        return 'middle';
+      } else if (itemPrice > MAX_PRICE) {
+        return 'high';
+      }
+      return value;
+    }
 
+    function getFilterPins() {
+      // фильтруем основные параметры
+      var filterPins = window.ordersData.filter(function (item) {
+        return (item.offer.type === inputType.value || inputType.value === 'any') &&
+          (getPriceValue(item) === housingPrice.value || housingPrice.value === 'any') &&
+          (item.offer.rooms === Number(inputRooms.value) || inputRooms.value === 'any') &&
+          (item.offer.guests === Number(inputGuests.value) || inputGuests.value === 'any');
+      });
+      // Фильтруем пины в зависимости от включенных кнопок/фильтров Доп параметры
+      // additionalyParams - информация о том какие фильтры Доп параметров включены
       var additionalyParams = window.additionalyParams;
       for (var key in additionalyParams) {
         if (additionalyParams.hasOwnProperty(key)) {
@@ -76,7 +71,7 @@
           });
         }
       }
-
+      // Ограничиваем количество пинов
       filterPins = filterPins.slice(0, SUM_PINS);
       return filterPins;
     }
@@ -100,13 +95,13 @@
     window.data.map.classList.remove('map--faded');
     window.form.adForm.classList.remove('ad-form--disabled');
     window.form.mapFilters.classList.remove('ad-form--disabled');
-    window.load(onSuccess);
+    window.sendRequest('load', onSuccess, function () {});
 
     var displayPinsWrapper = window.debounce(displayPins);
 
     filterForm.addEventListener('change', function () {
       displayPinsWrapper();
-      window.card.deleteCard();
+      window.card.delete();
     });
   }
 

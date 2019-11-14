@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var URL = 'https://js.dump.academy/keksobooking';
   var MIN_PRICE_BUNGALO = 0;
   var MIN_PRICE_FLAT = 1000;
   var MIN_PRICE_HOUSE = 5000;
@@ -173,16 +172,20 @@
     adForm.reset();
     mapFilters.reset();
     returnPinMain();
-    window.card.deleteCard();
+    window.card.delete();
     window.pin.deletePins();
     window.map.createNoActiveAddress();
+    window.loadphoto.deletePhoto();
+  }
+
+  function onSuccess() {
+    removeActiveState();
+    createSuccessMessage();
   }
 
   adForm.addEventListener('submit', function (evt) {
-    window.form.upload(new FormData(adForm), function () {
-      removeActiveState();
-      createSuccessMessage();
-    });
+    var formData = new FormData(adForm);
+    window.sendRequest('upload', onSuccess, createErrorMessage, formData);
     evt.preventDefault();
   });
 
@@ -191,26 +194,7 @@
     removeActiveState();
   });
 
-  function upload(data, onSuccess) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onSuccess(xhr.response);
-      } else {
-        createErrorMessage();
-      }
-    });
-
-    xhr.open('POST', URL);
-    xhr.send(data);
-  };
-
-  // window.upload = upload;
-
   window.form = {
-    upload: upload,
     enableAll: enableAll,
     adForm: adForm,
     mapFilters: mapFilters,
