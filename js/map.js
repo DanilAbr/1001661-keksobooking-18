@@ -11,7 +11,8 @@
   var inputRooms = document.querySelector('#housing-rooms');
   var inputGuests = document.querySelector('#housing-guests');
   var housingPrice = document.querySelector('#housing-price');
-  var dataLoaded = false;
+
+  window.dataLoaded = false;
 
   createNoActiveAddress();
 
@@ -23,7 +24,7 @@
     createAddress();
 
     function onSuccess(data) {
-      dataLoaded = true;
+      window.dataLoaded = true;
       data.forEach(function (item, i) {
         item.id = i;
       });
@@ -106,13 +107,13 @@
   }
 
   pinMain.addEventListener('mousedown', function () {
-    if (!dataLoaded) {
+    if (!window.dataLoaded) {
       enterActiveMode();
     }
   });
 
   pinMain.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.data.ENTER_KEYCODE && !dataLoaded) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE && !window.dataLoaded) {
       enterActiveMode();
     }
   });
@@ -178,7 +179,6 @@
 
     function onMouseUp(upEvt) {
       upEvt.preventDefault();
-
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     }

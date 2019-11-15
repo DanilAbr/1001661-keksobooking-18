@@ -34,7 +34,6 @@
 
     pins.forEach(function (item) {
       var isMainPin = item.classList.contains('map__pin--main');
-
       if (!isMainPin) {
         item.parentNode.removeChild(item);
       }

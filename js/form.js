@@ -10,17 +10,16 @@
   var fieldsets = adForm.querySelectorAll('.ad-form__element');
   var selectRooms = adForm.querySelector('#room_number');
   var selectGuests = adForm.querySelector('#capacity');
+  var guestsOptions = selectGuests.querySelectorAll('option');
   var adFormReset = adForm.querySelector('.ad-form__reset');
   var selectType = adForm.querySelector('#type');
   var price = adForm.querySelector('#price');
   var timeIn = adForm.querySelector('#timein');
   var timeOut = adForm.querySelector('#timeout');
-
   var main = document.querySelector('main');
   var pinMain = document.querySelector('.map__pin--main');
   var pinMainStartX = parseInt(pinMain.style.top, 10);
   var pinMainStartY = parseInt(pinMain.style.left, 10);
-
   var fieldsetsFilter = document.querySelectorAll('.map__features');
   var selectFilter = document.querySelectorAll('.map__filter');
   var mapFilters = document.querySelector('.map__filters');
@@ -54,45 +53,45 @@
     enableSome(selectFilter);
   }
 
-  selectGuests.options[0].setAttribute('disabled', true);
-  selectGuests.options[1].setAttribute('disabled', true);
-  selectGuests.options[3].setAttribute('disabled', true);
-  selectGuests.options[2].setAttribute('selected', true);
+  // Блокируем любой выбор
+  setGuestsValuesDisabled(guestsOptions);
   // Убираем варианты выбора количества гостей в зависимости от выбранного количества комнат
   selectRooms.onchange = function () {
-    selectGuests.options[0].removeAttribute('selected', true);
-    selectGuests.options[1].removeAttribute('selected', true);
-    selectGuests.options[2].removeAttribute('selected', true);
-    selectGuests.options[3].removeAttribute('selected', true);
-    selectGuests.options[2].setAttribute('selected', true);
-    switch (this.value) {
-      case '1':
-        selectGuests.options[0].setAttribute('disabled', true);
-        selectGuests.options[1].setAttribute('disabled', true);
-        selectGuests.options[2].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('disabled', true);
-        break;
-      case '2':
-        selectGuests.options[0].setAttribute('disabled', true);
-        selectGuests.options[1].removeAttribute('disabled', true);
-        selectGuests.options[2].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('disabled', true);
-        break;
-      case '3':
-        selectGuests.options[0].removeAttribute('disabled', true);
-        selectGuests.options[1].removeAttribute('disabled', true);
-        selectGuests.options[2].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('disabled', true);
-        break;
-      case '100':
-        selectGuests.options[0].setAttribute('disabled', true);
-        selectGuests.options[1].setAttribute('disabled', true);
-        selectGuests.options[2].setAttribute('disabled', true);
-        selectGuests.options[3].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('selected', true);
-        break;
-    }
+    setGuestsValues(guestsOptions, this.value);
   };
+  var availableOptionsForRooms = {
+    '1': ['1'],
+    '2': ['1', '2'],
+    '3': ['1', '2', '3'],
+    '100': ['0']
+  };
+
+  function setGuestsValuesDisabled(options) {
+    options.forEach(function (option) {
+      option.setAttribute('disabled', true);
+    });
+  }
+
+  function setGuestsValues(options, currentRoomsCount) {
+    // Отключаем все поля
+    setGuestsValuesDisabled(guestsOptions);
+    options.forEach(function (option) {
+      // Снимаем весь выбор
+      option.removeAttribute('selected', true);
+      // Массив со списком доступных гостей для выбранного количества комнат
+      var availableOptions = availableOptionsForRooms[currentRoomsCount];
+      // Для предвыбора выбираем максимальное значение гостей
+      var targetValue = availableOptions[availableOptions.length - 1];
+      // Если текущее значение опции входит в список доступных - убираем атрибут disabled
+      if (availableOptions.includes(option.value)) {
+        option.removeAttribute('disabled', true);
+      }
+      // Если текущее значение опции совпадает с доступным максимальным значением гостей - устанавливаем selected true
+      if (option.value === targetValue) {
+        option.setAttribute('selected', true);
+      }
+    });
+  }
 
   // Изменяем значение минимальной цены в зависимости от типа жилья
   selectType.onchange = function () {
@@ -191,6 +190,7 @@
 
   adFormReset.addEventListener('click', function (evt) {
     evt.preventDefault();
+    window.dataLoaded = false;
     removeActiveState();
   });
 
