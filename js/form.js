@@ -1,111 +1,116 @@
 'use strict';
 
 (function () {
-  var fieldset = document.querySelectorAll('.ad-form__element');
-  var selectRooms = document.querySelector('#room_number');
-  var selectGuests = document.querySelector('#capacity');
-  var selectFilter = document.querySelectorAll('.map__filter');
-  var mapFilters = document.querySelector('.map__filters');
+  var MIN_PRICE_BUNGALO = 0;
+  var MIN_PRICE_FLAT = 1000;
+  var MIN_PRICE_HOUSE = 5000;
+  var MIN_PRICE_PALACE = 10000;
+
   var adForm = document.querySelector('.ad-form');
+  var fieldsets = adForm.querySelectorAll('.ad-form__element');
+  var selectRooms = adForm.querySelector('#room_number');
+  var selectGuests = adForm.querySelector('#capacity');
+  var guestsOptions = selectGuests.querySelectorAll('option');
   var adFormReset = adForm.querySelector('.ad-form__reset');
-  var selectType = document.querySelector('#type');
+  var selectType = adForm.querySelector('#type');
   var price = adForm.querySelector('#price');
-  var timeIn = document.querySelector('#timein');
-  var timeOut = document.querySelector('#timeout');
+  var timeIn = adForm.querySelector('#timein');
+  var timeOut = adForm.querySelector('#timeout');
+  var main = document.querySelector('main');
   var pinMain = document.querySelector('.map__pin--main');
   var pinMainStartX = parseInt(pinMain.style.top, 10);
   var pinMainStartY = parseInt(pinMain.style.left, 10);
-  var ESC_KEYCODE = 27;
-  var main = document.querySelector('main');
-  var map = document.querySelector('.map');
-  var URL = 'https://js.dump.academy/keksobooking';
+  var fieldsetsFilter = document.querySelectorAll('.map__features');
+  var selectFilter = document.querySelectorAll('.map__filter');
+  var mapFilters = document.querySelector('.map__filters');
 
-  var fieldsetFilter = document.querySelectorAll('.map__features');
-
-  allDisabled();
+  disableAll();
 
   // Добавляем аттрибут disabled
-  function someDisabled(arr) {
-    arr.forEach(function (it) {
-      it.setAttribute('disabled', true);
+  function disableSome(array) {
+    array.forEach(function (item) {
+      item.setAttribute('disabled', true);
     });
   }
 
   // Удаляем аттрибут disabled
-  function someNoDisabled(arr) {
-    arr.forEach(function (it) {
-      it.removeAttribute('disabled', true);
+  function enableSome(array) {
+    array.forEach(function (item) {
+      item.removeAttribute('disabled', true);
     });
   }
 
   // Блокируем <input> и <select> формы и фильтрации объявлений
-  function allDisabled() {
-    someDisabled(fieldset);
-    someDisabled(fieldsetFilter);
-    someDisabled(selectFilter);
+  function disableAll() {
+    disableSome(fieldsets);
+    disableSome(fieldsetsFilter);
+    disableSome(selectFilter);
   }
   // Разблокируем <input> и <select> формы и фильтрации объявлений
-  function allNoDisabled() {
-    someNoDisabled(fieldset);
-    someNoDisabled(fieldsetFilter);
-    someNoDisabled(selectFilter);
+  function enableAll() {
+    enableSome(fieldsets);
+    enableSome(fieldsetsFilter);
+    enableSome(selectFilter);
   }
 
-  selectGuests.options[2].setAttribute('selected', true);
+  // Блокируем любой выбор
+  setGuestsValuesDisabled(guestsOptions);
   // Убираем варианты выбора количества гостей в зависимости от выбранного количества комнат
   selectRooms.onchange = function () {
-    selectGuests.options[0].removeAttribute('selected', true);
-    selectGuests.options[1].removeAttribute('selected', true);
-    selectGuests.options[2].removeAttribute('selected', true);
-    selectGuests.options[3].removeAttribute('selected', true);
-    selectGuests.options[2].setAttribute('selected', true);
-    switch (this.value) {
-      case '1':
-        selectGuests.options[0].setAttribute('disabled', true);
-        selectGuests.options[1].setAttribute('disabled', true);
-        selectGuests.options[2].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('disabled', true);
-        break;
-      case '2':
-        selectGuests.options[0].setAttribute('disabled', true);
-        selectGuests.options[1].removeAttribute('disabled', true);
-        selectGuests.options[2].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('disabled', true);
-        break;
-      case '3':
-        selectGuests.options[0].removeAttribute('disabled', true);
-        selectGuests.options[1].removeAttribute('disabled', true);
-        selectGuests.options[2].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('disabled', true);
-        break;
-      case '100':
-        selectGuests.options[0].setAttribute('disabled', true);
-        selectGuests.options[1].setAttribute('disabled', true);
-        selectGuests.options[2].setAttribute('disabled', true);
-        selectGuests.options[3].removeAttribute('disabled', true);
-        selectGuests.options[3].setAttribute('selected', true);
-        break;
-    }
+    setGuestsValues(guestsOptions, this.value);
   };
+  var availableOptionsForRooms = {
+    '1': ['1'],
+    '2': ['1', '2'],
+    '3': ['1', '2', '3'],
+    '100': ['0']
+  };
+
+  function setGuestsValuesDisabled(options) {
+    options.forEach(function (option) {
+      option.setAttribute('disabled', true);
+    });
+  }
+
+  function setGuestsValues(options, currentRoomsCount) {
+    // Отключаем все поля
+    setGuestsValuesDisabled(guestsOptions);
+    options.forEach(function (option) {
+      // Снимаем весь выбор
+      option.removeAttribute('selected', true);
+      // Массив со списком доступных гостей для выбранного количества комнат
+      var availableOptions = availableOptionsForRooms[currentRoomsCount];
+      // Для предвыбора выбираем максимальное значение гостей
+      var targetValue = availableOptions[availableOptions.length - 1];
+      // Если текущее значение опции входит в список доступных - убираем атрибут disabled
+      if (availableOptions.includes(option.value)) {
+        option.removeAttribute('disabled', true);
+      }
+      // Если текущее значение опции совпадает с доступным максимальным значением гостей - устанавливаем selected true
+      if (option.value === targetValue) {
+        option.setAttribute('selected', true);
+      }
+    });
+  }
 
   // Изменяем значение минимальной цены в зависимости от типа жилья
   selectType.onchange = function () {
     switch (this.value) {
       case 'flat':
-        price.setAttribute('min', 1000);
-        price.setAttribute('placeholder', 1000);
+        price.setAttribute('min', MIN_PRICE_FLAT);
+        price.setAttribute('placeholder', MIN_PRICE_FLAT);
         break;
       case 'house':
-        price.setAttribute('min', 5000);
-        price.setAttribute('placeholder', 5000);
+        price.setAttribute('min', MIN_PRICE_HOUSE);
+        price.setAttribute('placeholder', MIN_PRICE_HOUSE);
         break;
       case 'palace':
-        price.setAttribute('min', 10000);
-        price.setAttribute('placeholder', 10000);
+        price.setAttribute('min', MIN_PRICE_PALACE);
+        price.setAttribute('placeholder', MIN_PRICE_PALACE);
         break;
       default:
-        price.setAttribute('min', 0);
-        price.setAttribute('placeholder', 0);
+        price.setAttribute('min', MIN_PRICE_BUNGALO);
+        price.setAttribute('placeholder', MIN_PRICE_BUNGALO);
         break;
     }
   };
@@ -128,14 +133,14 @@
   function createSuccessMessage() {
     var successTemplate = document.querySelector('#success').content.querySelector('.success');
     var successElement = successTemplate.cloneNode(true);
-    map.appendChild(successElement);
+    window.data.map.appendChild(successElement);
 
     successElement.addEventListener('click', function () {
-      map.removeChild(successElement);
+      window.data.map.removeChild(successElement);
     });
 
     document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (evt.keyCode === window.data.ESC_KEYCODE) {
         successElement.remove();
       }
     });
@@ -151,57 +156,46 @@
     });
 
     document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (evt.keyCode === window.data.ESC_KEYCODE) {
         errorElement.remove();
       }
     });
   }
 
   // Переводим в неактивный режим
-  function noActiveState() {
-    map.classList.add('map--faded');
+  function removeActiveState() {
+    window.data.map.classList.add('map--faded');
     adForm.classList.add('ad-form--disabled');
     mapFilters.classList.add('ad-form--disabled');
-    allDisabled();
+    disableAll();
     adForm.reset();
     mapFilters.reset();
     returnPinMain();
-    window.card.deleteCard();
+    window.card.delete();
     window.pin.deletePins();
     window.map.createNoActiveAddress();
+    window.loadphoto.deletePhoto();
+  }
+
+  function onSuccess() {
+    removeActiveState();
+    createSuccessMessage();
   }
 
   adForm.addEventListener('submit', function (evt) {
-    window.upload(new FormData(adForm), function () {
-      noActiveState();
-      createSuccessMessage();
-    });
+    var formData = new FormData(adForm);
+    window.sendRequest('upload', onSuccess, createErrorMessage, formData);
     evt.preventDefault();
   });
 
   adFormReset.addEventListener('click', function (evt) {
     evt.preventDefault();
-    noActiveState();
+    window.dataLoaded = false;
+    removeActiveState();
   });
 
-  window.upload = function (data, onSuccess) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onSuccess(xhr.response);
-      } else {
-        createErrorMessage();
-      }
-    });
-
-    xhr.open('POST', URL);
-    xhr.send(data);
-  };
-
   window.form = {
-    allNoDisabled: allNoDisabled,
+    enableAll: enableAll,
     adForm: adForm,
     mapFilters: mapFilters,
   };

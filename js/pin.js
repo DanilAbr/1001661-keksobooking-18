@@ -7,8 +7,9 @@
     var pin = pinTemplate.cloneNode(true);
     pin.dataset.id = pinData.id;
 
-    pin.addEventListener('click', function (e) {
-      var pinNumber = e.currentTarget.dataset.id;
+    pin.addEventListener('click', function (element) {
+      pin.classList.add('.map__pin--active');
+      var pinNumber = element.currentTarget.dataset.id;
 
       var currentOrderData = window.ordersData.find(function (item) {
         return item.id.toString() === pinNumber;
@@ -29,12 +30,10 @@
 
   // Удаляем пины
   function deletePins() {
-    var map = document.querySelector('.map');
-    var pins = map.querySelectorAll('.map__pin');
+    var pins = window.data.map.querySelectorAll('.map__pin');
 
     pins.forEach(function (item) {
       var isMainPin = item.classList.contains('map__pin--main');
-
       if (!isMainPin) {
         item.parentNode.removeChild(item);
       }
@@ -42,20 +41,18 @@
   }
 
   // Выводим пины на карту
-  function renderPins(pinsArray) {
-    var map = document.querySelector('.map');
-
+  function render(pinsArray) {
     var pins = pinsArray.map(function (item) {
       return getPin(item);
     });
 
     pins.forEach(function (item) {
-      map.appendChild(item);
+      window.data.map.appendChild(item);
     });
   }
 
   window.pin = {
-    renderPins: renderPins,
+    render: render,
     deletePins: deletePins,
   };
 })();
