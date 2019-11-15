@@ -184,7 +184,7 @@
     renderPlaceDescription(currentOffer, cardElement);
     renderPlaceAvatar(currentOffer, cardElement);
     renderPlaceAddress(currentOffer, cardElement);
-    renderPlacePrice(currentOffer, cardElement)
+    renderPlacePrice(currentOffer, cardElement);
     deleteCard();
 
     window.data.map.appendChild(cardElement);
