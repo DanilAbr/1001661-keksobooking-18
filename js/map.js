@@ -34,7 +34,7 @@
 
     // Отображаем отфильтрованные пины
     function displayPins() {
-      window.pin.deletePins();
+      window.pin.delete();
       window.pin.render(getFilterPins());
     }
 
@@ -94,7 +94,7 @@
 
     window.form.enableAll();
     window.data.map.classList.remove('map--faded');
-    window.form.adForm.classList.remove('ad-form--disabled');
+    window.form.add.classList.remove('ad-form--disabled');
     window.form.mapFilters.classList.remove('ad-form--disabled');
     window.sendRequest('load', onSuccess, function () {});
 

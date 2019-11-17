@@ -21,7 +21,7 @@
   function deleteCard() {
     var card = window.data.map.querySelector('.map__card');
     if (card) {
-      card.parentNode.removeChild(card);
+      card.remove();
     }
   }
 
@@ -47,7 +47,7 @@
       var typeText = getTypeName(type);
       popupTypeElement.textContent = typeText;
     } catch (e) {
-      popupTypeElement.parentNode.removeChild(popupTypeElement);
+      popupTypeElement.remove();
     }
   }
 
@@ -59,7 +59,7 @@
       var capacityText = currentOffer.offer.rooms + ' комнаты для ' + currentOffer.offer.guests + ' гостей';
       popupCapacityElement.textContent = capacityText;
     } catch (e) {
-      popupCapacityElement.parentNode.removeChild(popupCapacityElement);
+      popupCapacityElement.remove();
     }
   }
 
@@ -71,7 +71,7 @@
       var timeText = 'Заезд после ' + currentOffer.offer.checkin + ', выезд до ' + currentOffer.offer.checkout;
       popupTimeElement.textContent = timeText;
     } catch (e) {
-      popupTimeElement.parentNode.removeChild(popupTimeElement);
+      popupTimeElement.remove();
     }
   }
 
@@ -86,7 +86,7 @@
         popupFeaturesElement.appendChild(elem);
       });
     } catch (e) {
-      popupFeaturesElement.parentNode.removeChild(popupFeaturesElement);
+      popupFeaturesElement.remove();
     }
   }
 
@@ -110,7 +110,7 @@
 
       imagesWrapperElement.appendChild(photosFragment);
     } catch (e) {
-      popupImagesElement.parentNode.removeChild(popupImagesElement);
+      popupImagesElement.remove();
     }
   }
 
@@ -121,7 +121,7 @@
     try {
       popupAvatarElement.src = currentOffer.author.avatar;
     } catch (e) {
-      popupAvatarElement.parentNode.removeChild(popupAvatarElement);
+      popupAvatarElement.remove();
     }
   }
 
@@ -132,7 +132,7 @@
     try {
       popupTitleElement.textContent = currentOffer.offer.title;
     } catch (e) {
-      popupTitleElement.parentNode.removeChild(popupTitleElement);
+      popupTitleElement.remove();
     }
   }
 
@@ -143,7 +143,7 @@
     try {
       popupDescriptionElement.textContent = currentOffer.offer.description;
     } catch (e) {
-      popupDescriptionElement.parentNode.removeChild(popupDescriptionElement);
+      popupDescriptionElement.remove();
     }
   }
 
@@ -154,7 +154,7 @@
     try {
       popupAddressElement.textContent = currentOffer.offer.address;
     } catch (e) {
-      popupAddressElement.parentNode.removeChild(popupAddressElement);
+      popupAddressElement.remove();
     }
   }
 
@@ -165,7 +165,7 @@
     try {
       popupPriceElement.textContent = currentOffer.offer.price + '₽/ночь';
     } catch (e) {
-      popupPriceElement.parentNode.removeChild(popupPriceElement);
+      popupPriceElement.remove();
     }
   }
 

@@ -115,12 +115,15 @@
     }
   };
 
+  var timeInValue = timeIn.value;
+  var timeOutValue = timeOut.value;
+
   timeIn.addEventListener('change', function () {
-    timeOut.value = timeIn.value;
+    timeOut.setAttribute('value', timeInValue);
   });
 
   timeOut.addEventListener('change', function () {
-    timeIn.value = timeOut.value;
+    timeIn.setAttribute('value', timeOutValue);
   });
 
   // Возвращаем главный пин на изначальное место
@@ -135,15 +138,26 @@
     var successElement = successTemplate.cloneNode(true);
     window.data.map.appendChild(successElement);
 
-    successElement.addEventListener('click', function () {
+    function onSuccessElementClick() {
       window.data.map.removeChild(successElement);
-    });
+      removeEventListeners();
+    }
 
-    document.addEventListener('keydown', function (evt) {
+    function onSuccessEscPress(evt) {
       if (evt.keyCode === window.data.ESC_KEYCODE) {
         successElement.remove();
+        removeEventListeners();
       }
-    });
+    }
+
+    function removeEventListeners() {
+      successElement.removeEventListener('click', onSuccessElementClick);
+      document.removeEventListener('keydown', onSuccessEscPress);
+    }
+
+    successElement.addEventListener('click', onSuccessElementClick);
+    document.addEventListener('keydown', onSuccessEscPress);
+
   }
   // Создаем сообщение об ошибке
   function createErrorMessage() {
@@ -151,15 +165,25 @@
     var errorElement = errorTemplate.cloneNode(true);
     main.appendChild(errorElement);
 
-    errorElement.addEventListener('click', function () {
+    function onErrorElementClick() {
       errorElement.remove();
-    });
+      removeEventListeners();
+    }
 
-    document.addEventListener('keydown', function (evt) {
+    function onErrorEscPress(evt) {
       if (evt.keyCode === window.data.ESC_KEYCODE) {
         errorElement.remove();
+        removeEventListeners();
       }
-    });
+    }
+
+    function removeEventListeners() {
+      errorElement.removeEventListener('click', onErrorElementClick);
+      document.removeEventListener('keydown', onErrorEscPress);
+    }
+
+    errorElement.addEventListener('click', onErrorElementClick);
+    document.addEventListener('keydown', onErrorEscPress);
   }
 
   // Переводим в неактивный режим
@@ -172,7 +196,7 @@
     mapFilters.reset();
     returnPinMain();
     window.card.delete();
-    window.pin.deletePins();
+    window.pin.delete();
     window.map.createNoActiveAddress();
     window.loadphoto.deletePhoto();
   }
@@ -196,7 +220,7 @@
 
   window.form = {
     enableAll: enableAll,
-    adForm: adForm,
+    add: adForm,
     mapFilters: mapFilters,
   };
 })();

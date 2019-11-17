@@ -7,16 +7,19 @@
     var pin = pinTemplate.cloneNode(true);
     pin.dataset.id = pinData.id;
 
-    pin.addEventListener('click', function (element) {
-      pin.classList.add('.map__pin--active');
-      var pinNumber = element.currentTarget.dataset.id;
+    function onPinClick() {
+      pin.addEventListener('click', function (element) {
+        pin.classList.add('.map__pin--active');
+        var pinNumber = element.currentTarget.dataset.id;
 
-      var currentOrderData = window.ordersData.find(function (item) {
-        return item.id.toString() === pinNumber;
+        var currentOrderData = window.ordersData.find(function (item) {
+          return item.id.toString() === pinNumber;
+        });
+
+        window.card.createModalElement(currentOrderData);
       });
-
-      window.card.createModalElement(currentOrderData);
-    });
+    }
+    onPinClick();
 
     var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
     var pinStyleRight = pinData.location.y - pin.offsetHeight;
@@ -30,13 +33,10 @@
 
   // Удаляем пины
   function deletePins() {
-    var pins = window.data.map.querySelectorAll('.map__pin');
+    var pins = window.data.map.querySelectorAll('.map__pin:not(.map__pin--main');
 
     pins.forEach(function (item) {
-      var isMainPin = item.classList.contains('map__pin--main');
-      if (!isMainPin) {
-        item.parentNode.removeChild(item);
-      }
+      item.parentNode.removeChild(item);
     });
   }
 
@@ -53,6 +53,6 @@
 
   window.pin = {
     render: render,
-    deletePins: deletePins,
+    delete: deletePins,
   };
 })();
