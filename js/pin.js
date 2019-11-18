@@ -1,37 +1,37 @@
 'use strict';
 
 (function () {
-  function renderPins(pinsArray) {
-    var map = document.querySelector('.map');
-
-    var pins = pinsArray.map(function (item) {
-      return getPin(item);
-    });
-
-    pins.forEach(function (item) {
-      map.appendChild(item);
-    });
-  }
-
+  // Создаем пин
   function getPin(pinData) {
     var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var pin = pinTemplate.cloneNode(true);
     pin.dataset.id = pinData.id;
 
-    pin.addEventListener('click', function (e) {
-      var pinNumber = e.currentTarget.dataset.id;
-
-      var currentOrderData = window.ordersData.find(function (item) {
-        return item.id.toString() === pinNumber;
+    function deactivatePins() {
+      var activePins = document.querySelectorAll('.map__pin--active');
+      activePins.forEach(function (item) {
+        item.classList.remove('map__pin--active');
       });
+    }
 
-      window.card.createModalElement(currentOrderData);
-    });
+    function setOnPinClick() {
+      pin.addEventListener('click', function (element) {
+        deactivatePins();
+        pin.classList.add('map__pin--active');
 
-    var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
-    var pinStyleRight = pinData.location.y - pin.offsetHeight;
+        var pinNumber = element.currentTarget.dataset.id;
 
-    pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
+        var currentOrderData = window.ordersData.find(function (item) {
+          return item.id.toString() === pinNumber;
+        });
+
+        window.card.createModalElement(currentOrderData);
+      });
+    }
+
+    setOnPinClick();
+
+    pin.style = 'left: ' + pinData.location.x + 'px; top: ' + pinData.location.y + 'px;';
     pin.querySelector('img').src = pinData.author.avatar;
     pin.querySelector('img').alt = pinData.offer.title;
 
@@ -40,20 +40,31 @@
 
   // Удаляем пины
   function deletePins() {
-    var map = document.querySelector('.map');
-    var pins = map.querySelectorAll('.map__pin');
+    var pins = window.data.map.querySelectorAll('.map__pin:not(.map__pin--main');
 
     pins.forEach(function (item) {
-      var isMainPin = item.classList.contains('map__pin--main');
+      item.parentNode.removeChild(item);
+    });
+  }
 
-      if (!isMainPin) {
-        item.parentNode.removeChild(item);
-      }
+  // Выводим пины на карту
+  function render(pinsArray) {
+    var pins = pinsArray.map(function (item) {
+      return getPin(item);
+    });
+
+    pins.forEach(function (item) {
+      window.data.map.appendChild(item);
+
+      // Корректируем положение пинов
+      var leftStyle = item.offsetLeft - (item.offsetWidth / 2);
+      var topStyle = item.offsetTop - item.offsetHeight;
+      item.style = 'left: ' + leftStyle + 'px; top: ' + topStyle + 'px;';
     });
   }
 
   window.pin = {
-    renderPins: renderPins,
-    deletePins: deletePins,
+    render: render,
+    delete: deletePins,
   };
 })();
