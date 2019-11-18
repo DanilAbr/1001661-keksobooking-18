@@ -56,9 +56,11 @@
   // Блокируем любой выбор
   setGuestsValuesDisabled(guestsOptions);
   // Убираем варианты выбора количества гостей в зависимости от выбранного количества комнат
-  selectRooms.onchange = function () {
-    setGuestsValues(guestsOptions, this.value);
-  };
+
+  function selectRoomsOnChange() {
+    setGuestsValues(guestsOptions, selectRooms.value);
+  }
+  selectRooms.onchange = selectRoomsOnChange;
 
   var availableOptionsForRooms = {
     '1': ['1'],
@@ -94,9 +96,14 @@
     });
   }
 
+  // Устанавливаем значение цены за ночь по умолчанию
+  function setMinPriceDefault() {
+    price.min = MIN_PRICE_FLAT;
+    price.placeholder = MIN_PRICE_FLAT;
+  }
   // Изменяем значение минимальной цены в зависимости от типа жилья
-  selectType.onchange = function () {
-    switch (this.value) {
+  function selectTypeOnChange() {
+    switch (selectType.value) {
       case 'flat':
         price.min = MIN_PRICE_FLAT;
         price.placeholder = MIN_PRICE_FLAT;
@@ -114,7 +121,8 @@
         price.placeholder = MIN_PRICE_BUNGALO;
         break;
     }
-  };
+  }
+  selectType.onchange = selectTypeOnChange;
 
   function setBothValues(value) {
     timeIn.value = value;
@@ -206,6 +214,8 @@
     window.pin.delete();
     window.map.createNoActiveAddress();
     window.loadphoto.deletePhoto();
+    setMinPriceDefault();
+
 
     // Корретно предзаполняем начальное состояние формы
     setGuestsValues(guestsOptions, selectRooms.value);
