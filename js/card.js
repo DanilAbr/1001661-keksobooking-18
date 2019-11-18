@@ -20,7 +20,10 @@
   // Удаляем карточку с объявлением
   function deleteCard() {
     var card = window.data.map.querySelector('.map__card');
+
     if (card) {
+      var closeButton = card.querySelector('.popup__close');
+      removeCardEventListeners(closeButton, onCloseButtonClick, onPopupEscPress);
       card.remove();
     }
   }
@@ -169,8 +172,25 @@
     }
   }
 
+  function onCloseButtonClick() {
+    deleteCard();
+  }
+
+  function onPopupEscPress(evt) {
+    if (evt.keyCode === window.data.ESC_KEYCODE) {
+
+      deleteCard();
+    }
+  }
+
+  function removeCardEventListeners(closeButton, onClose, onEscPress) {
+    closeButton.removeEventListener('click', onClose);
+    document.removeEventListener('keydown', onEscPress);
+  }
+
   // Создаем модальный элемент с описанием объявления
   function createModalElement(currentOffer) {
+    deleteCard();
     // Создаем копию карточки
     var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var cardElement = cardTemplate.cloneNode(true);
@@ -185,28 +205,10 @@
     renderPlaceAvatar(currentOffer, cardElement);
     renderPlaceAddress(currentOffer, cardElement);
     renderPlacePrice(currentOffer, cardElement);
-    deleteCard();
 
     window.data.map.appendChild(cardElement);
 
-    var closeButton = document.querySelector('.popup__close');
-
-    function onCloseButtonClick() {
-      deleteCard();
-      removeEventListeners();
-    }
-
-    function onPopupEscPress(evt) {
-      if (evt.keyCode === window.data.ESC_KEYCODE) {
-        deleteCard();
-        removeEventListeners();
-      }
-    }
-
-    function removeEventListeners() {
-      closeButton.removeEventListener('click', onCloseButtonClick);
-      document.removeEventListener('keydown', onPopupEscPress);
-    }
+    var closeButton = cardElement.querySelector('.popup__close');
 
     closeButton.addEventListener('click', onCloseButtonClick);
     document.addEventListener('keydown', onPopupEscPress);

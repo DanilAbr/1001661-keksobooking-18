@@ -29,14 +29,14 @@
   // Добавляем аттрибут disabled
   function disableSome(array) {
     array.forEach(function (item) {
-      item.setAttribute('disabled', true);
+      item.disabled = true;
     });
   }
 
   // Удаляем аттрибут disabled
   function enableSome(array) {
     array.forEach(function (item) {
-      item.removeAttribute('disabled', true);
+      item.disabled = false;
     });
   }
 
@@ -59,6 +59,7 @@
   selectRooms.onchange = function () {
     setGuestsValues(guestsOptions, this.value);
   };
+
   var availableOptionsForRooms = {
     '1': ['1'],
     '2': ['1', '2'],
@@ -68,7 +69,7 @@
 
   function setGuestsValuesDisabled(options) {
     options.forEach(function (option) {
-      option.setAttribute('disabled', true);
+      option.disabled = true;
     });
   }
 
@@ -77,18 +78,18 @@
     setGuestsValuesDisabled(guestsOptions);
     options.forEach(function (option) {
       // Снимаем весь выбор
-      option.removeAttribute('selected', true);
+      option.selected = false;
       // Массив со списком доступных гостей для выбранного количества комнат
       var availableOptions = availableOptionsForRooms[currentRoomsCount];
       // Для предвыбора выбираем максимальное значение гостей
       var targetValue = availableOptions[availableOptions.length - 1];
       // Если текущее значение опции входит в список доступных - убираем атрибут disabled
       if (availableOptions.includes(option.value)) {
-        option.removeAttribute('disabled', true);
+        option.disabled = false;
       }
       // Если текущее значение опции совпадает с доступным максимальным значением гостей - устанавливаем selected true
       if (option.value === targetValue) {
-        option.setAttribute('selected', true);
+        option.selected = true;
       }
     });
   }
@@ -97,33 +98,35 @@
   selectType.onchange = function () {
     switch (this.value) {
       case 'flat':
-        price.setAttribute('min', MIN_PRICE_FLAT);
-        price.setAttribute('placeholder', MIN_PRICE_FLAT);
+        price.min = MIN_PRICE_FLAT;
+        price.placeholder = MIN_PRICE_FLAT;
         break;
       case 'house':
-        price.setAttribute('min', MIN_PRICE_HOUSE);
-        price.setAttribute('placeholder', MIN_PRICE_HOUSE);
+        price.min = MIN_PRICE_HOUSE;
+        price.placeholder = MIN_PRICE_HOUSE;
         break;
       case 'palace':
-        price.setAttribute('min', MIN_PRICE_PALACE);
-        price.setAttribute('placeholder', MIN_PRICE_PALACE);
+        price.min = MIN_PRICE_PALACE;
+        price.placeholder = MIN_PRICE_PALACE;
         break;
       default:
-        price.setAttribute('min', MIN_PRICE_BUNGALO);
-        price.setAttribute('placeholder', MIN_PRICE_BUNGALO);
+        price.min = MIN_PRICE_BUNGALO;
+        price.placeholder = MIN_PRICE_BUNGALO;
         break;
     }
   };
 
-  var timeInValue = timeIn.value;
-  var timeOutValue = timeOut.value;
+  function setBothValues(value) {
+    timeIn.value = value;
+    timeOut.value = value;
+  }
 
-  timeIn.addEventListener('change', function () {
-    timeOut.setAttribute('value', timeInValue);
+  timeIn.addEventListener('change', function (e) {
+    setBothValues(e.currentTarget.value);
   });
 
-  timeOut.addEventListener('change', function () {
-    timeIn.setAttribute('value', timeOutValue);
+  timeOut.addEventListener('change', function (e) {
+    setBothValues(e.currentTarget.value);
   });
 
   // Возвращаем главный пин на изначальное место
@@ -137,6 +140,8 @@
     var successTemplate = document.querySelector('#success').content.querySelector('.success');
     var successElement = successTemplate.cloneNode(true);
     window.data.map.appendChild(successElement);
+
+    window.dataLoaded = false;
 
     function onSuccessElementClick() {
       window.data.map.removeChild(successElement);
@@ -164,6 +169,8 @@
     var errorTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorElement = errorTemplate.cloneNode(true);
     main.appendChild(errorElement);
+
+    window.dataLoaded = false;
 
     function onErrorElementClick() {
       errorElement.remove();
@@ -199,6 +206,9 @@
     window.pin.delete();
     window.map.createNoActiveAddress();
     window.loadphoto.deletePhoto();
+
+    // Корретно предзаполняем начальное состояние формы
+    setGuestsValues(guestsOptions, selectRooms.value);
   }
 
   function onSuccess() {
@@ -217,6 +227,9 @@
     window.dataLoaded = false;
     removeActiveState();
   });
+
+  // Корретно предзаполняем начальное состояние формы
+  setGuestsValues(guestsOptions, selectRooms.value);
 
   window.form = {
     enableAll: enableAll,

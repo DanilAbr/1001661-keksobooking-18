@@ -7,9 +7,18 @@
     var pin = pinTemplate.cloneNode(true);
     pin.dataset.id = pinData.id;
 
-    function onPinClick() {
+    function deactivatePins() {
+      var activePins = document.querySelectorAll('.map__pin--active');
+      activePins.forEach(function (item) {
+        item.classList.remove('map__pin--active');
+      });
+    }
+
+    function setOnPinClick() {
       pin.addEventListener('click', function (element) {
-        pin.classList.add('.map__pin--active');
+        deactivatePins();
+        pin.classList.add('map__pin--active');
+
         var pinNumber = element.currentTarget.dataset.id;
 
         var currentOrderData = window.ordersData.find(function (item) {
@@ -19,12 +28,10 @@
         window.card.createModalElement(currentOrderData);
       });
     }
-    onPinClick();
 
-    var pinStyleLeft = pinData.location.x - pin.offsetWidth / 2;
-    var pinStyleRight = pinData.location.y - pin.offsetHeight;
+    setOnPinClick();
 
-    pin.style = 'left: ' + pinStyleLeft + 'px; top: ' + pinStyleRight + 'px;';
+    pin.style = 'left: ' + pinData.location.x + 'px; top: ' + pinData.location.y + 'px;';
     pin.querySelector('img').src = pinData.author.avatar;
     pin.querySelector('img').alt = pinData.offer.title;
 
@@ -48,6 +55,11 @@
 
     pins.forEach(function (item) {
       window.data.map.appendChild(item);
+
+      // Корректируем положение пинов
+      var leftStyle = item.offsetLeft - (item.offsetWidth / 2);
+      var topStyle = item.offsetTop - item.offsetHeight;
+      item.style = 'left: ' + leftStyle + 'px; top: ' + topStyle + 'px;';
     });
   }
 

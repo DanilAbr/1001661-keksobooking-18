@@ -5,7 +5,7 @@
   var timeout = 10000;
 
   // type = load || upload
-  window.sendRequest = function (type, onSuccess, onError, data) {
+  function sendRequest(type, onSuccess, onError, data) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -37,6 +37,7 @@
     } else if (type === 'upload') {
       xhr.send(data);
     }
+  }
 
-  };
+  window.sendRequest = sendRequest;
 })();

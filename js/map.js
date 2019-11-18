@@ -52,26 +52,20 @@
     }
 
     function getFilterPins() {
+      // additionalyParams - информация о том какие фильтры Доп параметров включены
+      var additionalyParams = window.additionalyParams;
       // фильтруем основные параметры
       var filterPins = window.ordersData.filter(function (item) {
         return (item.offer.type === inputType.value || inputType.value === 'any') &&
           (getPriceValue(item) === housingPrice.value || housingPrice.value === 'any') &&
           (item.offer.rooms === Number(inputRooms.value) || inputRooms.value === 'any') &&
-          (item.offer.guests === Number(inputGuests.value) || inputGuests.value === 'any');
-      });
-      // Фильтруем пины в зависимости от включенных кнопок/фильтров Доп параметры
-      // additionalyParams - информация о том какие фильтры Доп параметров включены
-      var additionalyParams = window.additionalyParams;
-      for (var key in additionalyParams) {
-        if (additionalyParams.hasOwnProperty(key)) {
-          filterPins = filterPins.filter(function (item) {
-            if (additionalyParams[key]) {
-              return item.offer.features.includes(key);
-            }
-            return true;
+          (item.offer.guests === Number(inputGuests.value) || inputGuests.value === 'any') &&
+          // Фильтруем пины в зависимости от включенных кнопок/фильтров Доп параметры
+          item.offer.features.every(function (feature) {
+            return !additionalyParams[feature];
           });
-        }
-      }
+      });
+
       // Ограничиваем количество пинов
       filterPins = filterPins.slice(0, SUM_PINS);
       return filterPins;
