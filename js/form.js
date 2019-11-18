@@ -216,7 +216,6 @@
     window.loadphoto.deletePhoto();
     setMinPriceDefault();
 
-
     // Корретно предзаполняем начальное состояние формы
     setGuestsValues(guestsOptions, selectRooms.value);
   }
